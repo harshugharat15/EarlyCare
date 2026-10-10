@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+<head>    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Early Care">
+    <meta name="theme-color" content="#11998e">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/color/192/heart-with-pulse.png">
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js');
+      }
+    </script>
+    <title>Health Profile - Early Care</title></head>
+<body style="margin:0;padding:0;font-family:Arial,sans-serif;
+             background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);min-height:100vh;">
+
+<!-- TOP NAV -->
+<table width="100%" cellpadding="0" cellspacing="0"
+       style="background:linear-gradient(135deg,#00695c,#00897b);
+              box-shadow:0 4px 15px rgba(0,0,0,0.3);">
+  <tr>
+    <td style="padding:14px 30px;" width="60">
+      <img src="https://img.icons8.com/color/48/medical-history.png" width="38" alt="profile">
+    </td>
+    <td>
+      <span style="color:white;font-size:20px;font-weight:bold;letter-spacing:2px;">EARLY CARE</span><br>
+      <span style="color:rgba(255,255,255,0.85);font-size:12px;">
+        Health Profile &mdash; {{ user_name }}
+      </span>
+    </td>
+    <td align="right" style="padding:14px 30px;">
+      <a href="/survey"
+         style="background:rgba(255,255,255,0.2);color:white;padding:7px 16px;
+                border-radius:20px;text-decoration:none;font-size:13px;margin-right:8px;">
+        Edit Survey
+      </a>
+      <a href="/dashboard"
+         style="background:rgba(255,255,255,0.2);color:white;padding:7px 16px;
+                border-radius:20px;text-decoration:none;font-size:13px;">
+        &#8592; Dashboard
+      </a>
+    </td>
+  </tr>
+</table>
+
+<!-- FLASH -->
+{% with messages = get_flashed_messages() %}{% if messages %}
+<div style="padding:10px 30px;">
+{% for msg in messages %}
+<div style="background:#d4edda;border:1px solid #28a745;border-radius:10px;
+            padding:12px 18px;color:#155724;font-size:14px;margin-top:8px;">
+  &#10003; {{ msg }}
+</div>
+{% endfor %}
+</div>
+{% endif %}{% endwith %}
+
+{% if survey %}
+
+<div style="padding:20px 30px 30px 30px;">
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr valign="top">
+
+      <!-- LEFT COLUMN -->
+      <td width="50%" style="padding-right:14px;">
+
+        <!-- PERSONAL DETAILS -->
+        <div style="background:white;border-radius:16px;
+                    box-shadow:0 8px 30px rgba(0,0,0,0.2);overflow:hidden;margin-bottom:16px;">
+          <div style="background:linear-gradient(135deg,#1a3a8f,#1976d2);padding:15px 22px;">
+            <img src="https://img.icons8.com/color/24/user.png" width="20"
+                 style="vertical-align:middle;">
+            <b style="color:white;font-size:14px;margin-left:8px;vertical-align:middle;">
+              Personal Details
+            </b>
+          </div>
+          <div style="padding:20px 24px;">
+            <table width="100%" cellpadding="8" cellspacing="0"
+                   style="font-size:13px;border-collapse:collapse;">
+              {% for label, val in [
+                ('Name',   survey['name'] or user_name),
+                ('Age',    (survey['age']|string + ' years') if survey['age'] else 'N/A'),
+                ('Gender', survey['gender'] or 'N/A'),
+                ('Height', (survey['height_cm']|string + ' cm') if survey['height_cm'] else 'N/A'),
+                ('Weight', (survey['weight_kg']|string + ' kg') if survey['weight_kg'] else 'N/A'),
+                ('Survey Submitted', survey['submitted_at'] or 'N/A')
+              ] %}
+              <tr style="border-bottom:1px solid #f5f5f5;">
+                <td style="color:#888;width:45%;">{{ label }}</td>
+                <td style="font-weight:bold;color:#333;">{{ val }}</td>
+              </tr>
+              {% endfor %}
+            </table>
+          </div>
+        </div>
+
+        <!-- BMI CARD -->
+        {% if survey['bmi'] %}
+        <div style="background:white;border-radius:16px;
+                    box-shadow:0 8px 30px rgba(0,0,0,0.2);overflow:hidden;margin-bottom:16px;">
+          <div style="background:linear-gradient(135deg,#e65100,#fb8c00);padding:15px 22px;">
+            <img src="https://img.icons8.com/color/24/scales.png" width="20"
+                 style="vertical-align:middle;">
+            <b style="color:white;font-size:14px;margin-left:8px;vertical-align:middle;">
+              BMI Analysis
+            </b>
+          </div>
+          <div style="padding:20px 24px;">
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr valign="middle">
+                <td width="110" align="center">
+                  <div style="background:linear-gradient(135deg,#e65100,#fb8c00);
+                              border-radius:50%;width:90px;height:90px;
+                              display:flex;align-items:center;justify-content:center;
+                              box-shadow:0 4px 15px rgba(230,81,0,0.4);">
+                    <table width="90" height="90" cellpadding="0" cellspacing="0">
+                      <tr><td align="center" valign="middle"
+                              style="font-size:24px;font-weight:bold;color:white;
+                                     line-height:90px;">
+                        {{ survey['bmi'] }}
+                      </td></tr>
+                    </table>
+                  </div>
+                  <p style="color:#888;font-size:11px;margin:6px 0 0 0;text-align:center;">
+                    BMI Score
+                  </p>
+                </td>
+                <td style="padding-left:20px;">
+                  {% if profile %}
+                  <div style="font-size:22px;font-weight:bold;color:#e65100;margin-bottom:8px;">
+                    {{ profile['bmi_category'] }}
+                  </div>
+                  {% endif %}
+                  <table cellpadding="3" cellspacing="0" style="font-size:12px;color:#666;">
+                    <tr><td>Below 18.5</td><td>&rarr;</td><td>Underweight</td></tr>
+                    <tr><td>18.5 – 24.9</td><td>&rarr;</td><td style="color:#2e7d32;"><b>Normal</b></td></tr>
+                    <tr><td>25.0 – 29.9</td><td>&rarr;</td><td>Overweight</td></tr>
+                    <tr><td>30.0 &amp; above</td><td>&rarr;</td><td>Obese</td></tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- LIFESTYLE -->
+        <div style="background:white;border-radius:16px;
+                    box-shadow:0 8px 30px rgba(0,0,0,0.2);overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#1b5e20,#388e3c);padding:15px 22px;">
+            <img src="https://img.icons8.com/color/24/heart-with-pulse.png" width="20"
+                 style="vertical-align:middle;">
+            <b style="color:white;font-size:14px;margin-left:8px;vertical-align:middle;">
+              Lifestyle Summary
+            </b>
+          </div>
+          <div style="padding:20px 24px;">
+            <table width="100%" cellpadding="8" cellspacing="0"
+                   style="font-size:13px;border-collapse:collapse;">
+              {% for icon_url, label, val in [
+                ('https://img.icons8.com/color/16/water.png',       'Water Intake',    (survey['water_intake_liters']|string+' L/day') if survey['water_intake_liters'] else 'N/A'),
+                ('https://img.icons8.com/color/16/running.png',     'Activity Level',  survey['activity_level'] or 'N/A'),
+                ('https://img.icons8.com/color/16/sleeping.png',    'Sleep Duration',  (survey['sleep_hours']|string+' hrs/night') if survey['sleep_hours'] else 'N/A'),
+                ('https://img.icons8.com/color/16/pill.png',        'Takes Medicines', survey['takes_medicine'] or 'N/A'),
+                ('https://img.icons8.com/color/16/alarm.png',       'Needs Reminders', survey['needs_reminders'] or 'N/A'),
+                ('https://img.icons8.com/color/16/no-smoking.png',  'Smoking',         survey['smoking_status'] or 'N/A'),
+                ('https://img.icons8.com/color/16/salad.png',       'Diet Type',       survey['diet_type'] or 'N/A'),
+                ('https://img.icons8.com/color/16/brain.png',       'Stress Level',    survey['stress_level'] or 'N/A')
+              ] %}
+              <tr style="border-bottom:1px solid #f5f5f5;">
+                <td style="color:#888;width:45%;">
+                  <img src="{{ icon_url }}" width="14" style="vertical-align:middle;"
+                       onerror="this.style.display='none'">
+                  &nbsp;{{ label }}
+                </td>
+                <td style="font-weight:bold;color:#333;">{{ val }}</td>
+              </tr>
+              {% endfor %}
+            </table>
+          </div>
+        </div>
+
+      </td>
+
+      <!-- RIGHT COLUMN: SUGGESTIONS -->
+      <td width="50%" style="padding-left:14px;">
+
+        {% if profile %}
+
+        <!-- DOCTOR IMAGE BANNER -->
+        <div style="background:linear-gradient(135deg,#00695c,#00897b);border-radius:16px;
+                    padding:20px 24px;margin-bottom:16px;text-align:center;
+                    box-shadow:0 8px 30px rgba(0,0,0,0.2);">
+          <img src="https://img.icons8.com/color/96/doctor-male.png" width="80" alt="Doctor"
+               onerror="this.style.display='none'">
+          <h3 style="color:white;margin:10px 0 4px 0;font-size:18px;">
+            Your Personalised Suggestions
+          </h3>
+          <p style="color:rgba(255,255,255,0.85);font-size:12px;margin:0;">
+            Based on your health survey responses
+          </p>
+        </div>
+
+        <!-- WATER SUGGESTION -->
+        <div style="background:white;border-radius:14px;padding:16px 20px;
+                    box-shadow:0 6px 20px rgba(0,0,0,0.15);margin-bottom:12px;
+                    border-left:5px solid #1976d2;">
+          <table cellpadding="0" cellspacing="0" width="100%">
+            <tr valign="middle">
+              <td width="44">
+                <img src="https://img.icons8.com/color/48/water.png" width="36"
+                     onerror="this.style.display='none'">
+              </td>
+              <td style="padding-left:12px;">
+                <b style="color:#0d47a1;font-size:13px;">Water Reminder</b>
+                <p style="color:#555;font-size:12px;margin:5px 0 0 0;line-height:1.5;">
+                  {{ profile['water_suggestion'] }}
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- EXERCISE SUGGESTION -->
+        <div style="background:white;border-radius:14px;padding:16px 20px;
+                    box-shadow:0 6px 20px rgba(0,0,0,0.15);margin-bottom:12px;
+                    border-left:5px solid #388e3c;">
+          <table cellpadding="0" cellspacing="0" width="100%">
+            <tr valign="middle">
+              <td width="44">
+                <img src="https://img.icons8.com/color/48/running.png" width="36"
+                     onerror="this.style.display='none'">
+              </td>
+              <td style="padding-left:12px;">
+                <b style="color:#1b5e20;font-size:13px;">Exercise Reminder</b>
+                <p style="color:#555;font-size:12px;margin:5px 0 0 0;line-height:1.5;">
+                  {{ profile['exercise_suggestion'] }}
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- MEDICINE SUGGESTION -->
+        <div style="background:white;border-radius:14px;padding:16px 20px;
+                    box-shadow:0 6px 20px rgba(0,0,0,0.15);margin-bottom:12px;
+                    border-left:5px solid #e91e63;">
+          <table cellpadding="0" cellspacing="0" width="100%">
+            <tr valign="middle">
+              <td width="44">
+                <img src="https://img.icons8.com/color/48/pill.png" width="36"
+                     onerror="this.style.display='none'">
+              </td>
+              <td style="padding-left:12px;">
+                <b style="color:#880e4f;font-size:13px;">Medicine Reminder</b>
+                <p style="color:#555;font-size:12px;margin:5px 0 0 0;line-height:1.5;">
+                  {{ profile['medicine_suggestion'] }}
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- SLEEP SUGGESTION -->
+        <div style="background:white;border-radius:14px;padding:16px 20px;
+                    box-shadow:0 6px 20px rgba(0,0,0,0.15);margin-bottom:12px;
+                    border-left:5px solid #fbc02d;">
+          <table cellpadding="0" cellspacing="0" width="100%">
+            <tr valign="middle">
+              <td width="44">
+                <img src="https://img.icons8.com/color/48/sleeping-in-bed.png" width="36"
+                     onerror="this.style.display='none'">
+              </td>
+              <td style="padding-left:12px;">
+                <b style="color:#f57f17;font-size:13px;">Sleep Advice</b>
+                <p style="color:#555;font-size:12px;margin:5px 0 0 0;line-height:1.5;">
+                  {{ profile['sleep_suggestion'] }}
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- DISCLAIMER -->
+        <div style="background:#fff8e1;border:2px solid #ffc107;border-radius:12px;
+                    padding:14px 18px;margin-bottom:12px;">
+          <img src="https://img.icons8.com/color/20/error.png" width="16"
+               style="vertical-align:middle;" onerror="this.style.display='none'">
+          <b style="color:#6d4c00;font-size:13px;">&nbsp; Important Notice</b>
+          <p style="color:#6d4c00;font-size:12px;margin:6px 0 0 0;line-height:1.5;">
+            {{ profile['general_note'] }}
+          </p>
+        </div>
+
+        <!-- GO TO DASHBOARD BUTTON -->
+        <a href="/dashboard"
+           style="display:block;text-align:center;padding:14px;
+                  background:linear-gradient(135deg,#00695c,#00897b);
+                  color:white;text-decoration:none;border-radius:12px;
+                  font-size:15px;font-weight:bold;
+                  box-shadow:0 4px 12px rgba(0,105,92,0.4);">
+          Go to Dashboard &rarr;
+        </a>
+
+        {% endif %}
+
+      </td>
+
+    </tr>
+  </table>
+</div>
+
+{% else %}
+<div style="padding:40px 30px;text-align:center;">
+  <div style="background:white;border-radius:16px;padding:50px 30px;
+              box-shadow:0 8px 30px rgba(0,0,0,0.2);">
+    <img src="https://img.icons8.com/color/80/survey.png" width="64"
+         style="opacity:0.6;" onerror="this.style.display='none'">
+    <p style="color:#888;font-size:15px;margin-top:14px;">No survey data found.</p>
+    <a href="/survey"
+       style="display:inline-block;margin-top:10px;padding:12px 28px;
+              background:linear-gradient(135deg,#1a3a8f,#1976d2);color:white;
+              border-radius:12px;text-decoration:none;font-weight:bold;font-size:14px;">
+      Complete Your Health Survey &rarr;
+    </a>
+  </div>
+</div>
+{% endif %}
+
+<!-- FOOTER -->
+<div style="text-align:center;padding:14px;color:rgba(255,255,255,0.4);font-size:12px;">
+  <img src="https://img.icons8.com/color/16/heart-with-pulse.png" width="13"
+       style="vertical-align:middle;opacity:0.6;">
+  &nbsp;Early Care &mdash; NOT a medical diagnosis.
+</div>
+
+</body>
+</html>

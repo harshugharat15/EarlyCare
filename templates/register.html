@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Early Care">
+    <meta name="theme-color" content="#11998e">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/color/192/heart-with-pulse.png">
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js');
+      }
+    </script>
+    <title>Register - Early Care</title></head>
+<body style="margin:0; padding:0; background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+             min-height:100vh; font-family:Arial,sans-serif;">
+
+<table width="100%" cellpadding="0" cellspacing="0" style="min-height:100vh;">
+<tr><td align="center" valign="middle" style="padding:30px;">
+
+<table width="820" cellpadding="0" cellspacing="0"
+       style="background:white; border-radius:22px;
+              box-shadow:0 25px 70px rgba(0,0,0,0.5); overflow:hidden;">
+<tr>
+
+    <!-- LEFT PANEL -->
+    <td width="40%"
+        style="background:linear-gradient(160deg,#1a3a8f,#2196f3);
+               padding:40px 28px; vertical-align:middle; text-align:center;">
+
+        <img src="https://img.icons8.com/color/160/000000/medical-history.png"
+             alt="Register" width="120"
+             style="filter:drop-shadow(0 8px 20px rgba(0,0,0,0.3)); margin-bottom:18px;">
+        <br>
+        <h2 style="color:white; font-size:20px; margin:0 0 8px 0; letter-spacing:2px;">
+            &#9829; EARLY CARE
+        </h2>
+        <p style="color:rgba(255,255,255,0.85); font-size:13px; margin:0 0 20px 0; line-height:1.6;">
+            Join Early Care and take control of your health with personalised reminders.
+        </p>
+        <hr style="border:none; border-top:1px solid rgba(255,255,255,0.25); margin:0 0 20px 0;">
+
+        <!-- Steps with icons -->
+        <table cellpadding="6" cellspacing="0" width="100%">
+            {% for step, icon_url, text in [
+                ('1', 'https://img.icons8.com/color/30/add-user-male.png',    'Register your account'),
+                ('2', 'https://img.icons8.com/color/30/survey.png',           'Complete health survey'),
+                ('3', 'https://img.icons8.com/color/30/heart-with-pulse.png', 'Get your health profile'),
+                ('4', 'https://img.icons8.com/color/30/appointment-reminders.png', 'Set smart reminders')
+            ] %}
+            <tr>
+                <td width="32">
+                    <div style="background:rgba(255,255,255,0.2); color:white; border-radius:50%;
+                                width:24px; height:24px; text-align:center; line-height:24px;
+                                font-size:12px; font-weight:bold; display:inline-block;">
+                        {{ step }}
+                    </div>
+                </td>
+                <td width="30">
+                    <img src="{{ icon_url }}" width="22" alt="step"
+                         style="vertical-align:middle;">
+                </td>
+                <td style="color:rgba(255,255,255,0.88); font-size:12px;
+                            text-align:left; vertical-align:middle;">
+                    {{ text }}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <br>
+        <img src="https://img.icons8.com/color/80/000000/caduceus.png"
+             alt="medical" width="55" style="opacity:0.8; margin-top:14px;">
+    </td>
+
+    <!-- RIGHT FORM -->
+    <td width="60%" style="padding:36px 44px; vertical-align:middle;">
+
+        <div style="text-align:center; margin-bottom:22px;">
+            <img src="https://img.icons8.com/color/64/000000/add-user-male.png"
+                 alt="Register" width="52" style="margin-bottom:8px;">
+            <h2 style="color:#1a3a8f; margin:0; font-size:21px;">Create New Account</h2>
+            <p style="color:#888; font-size:13px; margin:5px 0 0 0;">
+                Fill in your details to get started
+            </p>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for msg in messages %}
+        <div style="background:#ffe0e0; border:1px solid #f44336; border-radius:10px;
+                    padding:10px 15px; margin-bottom:14px; color:#c62828; font-size:13px;">
+            <img src="https://img.icons8.com/color/16/error.png" width="14">&nbsp;{{ msg }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="/register">
+
+            <!-- Full Name -->
+            <div style="margin-bottom:14px;">
+                <label style="display:block; color:#444; font-weight:bold; font-size:12px; margin-bottom:5px;">
+                    <img src="https://img.icons8.com/color/16/user.png" width="14"
+                         style="vertical-align:middle;">&nbsp; Full Name *
+                </label>
+                <input type="text" name="full_name" placeholder="Enter your full name" required
+                       style="width:100%; padding:11px 13px; border:2px solid #e0e0e0;
+                              border-radius:10px; font-size:13px; box-sizing:border-box;">
+            </div>
+
+            <!-- Email -->
+            <div style="margin-bottom:14px;">
+                <label style="display:block; color:#444; font-weight:bold; font-size:12px; margin-bottom:5px;">
+                    <img src="https://img.icons8.com/color/16/email.png" width="14"
+                         style="vertical-align:middle;">&nbsp; Email Address *
+                </label>
+                <input type="email" name="email" placeholder="Enter your email" required
+                       style="width:100%; padding:11px 13px; border:2px solid #e0e0e0;
+                              border-radius:10px; font-size:13px; box-sizing:border-box;">
+            </div>
+
+            <!-- Password row -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:14px;">
+                <tr valign="top">
+                    <td width="49%" style="padding-right:8px;">
+                        <label style="display:block; color:#444; font-weight:bold; font-size:12px; margin-bottom:5px;">
+                            <img src="https://img.icons8.com/color/16/key.png" width="14"
+                                 style="vertical-align:middle;">&nbsp; Password *
+                        </label>
+                        <input type="password" name="password"
+                               placeholder="Min. 6 characters" required
+                               style="width:100%; padding:11px 13px; border:2px solid #e0e0e0;
+                                      border-radius:10px; font-size:13px; box-sizing:border-box;">
+                    </td>
+                    <td width="49%" style="padding-left:8px;">
+                        <label style="display:block; color:#444; font-weight:bold; font-size:12px; margin-bottom:5px;">
+                            <img src="https://img.icons8.com/color/16/key.png" width="14"
+                                 style="vertical-align:middle;">&nbsp; Confirm Password *
+                        </label>
+                        <input type="password" name="confirm_password"
+                               placeholder="Re-enter password" required
+                               style="width:100%; padding:11px 13px; border:2px solid #e0e0e0;
+                                      border-radius:10px; font-size:13px; box-sizing:border-box;">
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Age + Gender -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:22px;">
+                <tr valign="top">
+                    <td width="49%" style="padding-right:8px;">
+                        <label style="display:block; color:#444; font-weight:bold; font-size:12px; margin-bottom:5px;">
+                            <img src="https://img.icons8.com/color/16/birthday-cake.png" width="14"
+                                 style="vertical-align:middle;">&nbsp; Age
+                        </label>
+                        <input type="number" name="age" placeholder="Your age"
+                               min="1" max="120"
+                               style="width:100%; padding:11px 13px; border:2px solid #e0e0e0;
+                                      border-radius:10px; font-size:13px; box-sizing:border-box;">
+                    </td>
+                    <td width="49%" style="padding-left:8px;">
+                        <label style="display:block; color:#444; font-weight:bold; font-size:12px; margin-bottom:5px;">
+                            <img src="https://img.icons8.com/color/16/gender.png" width="14"
+                                 style="vertical-align:middle;">&nbsp; Gender
+                        </label>
+                        <select name="gender"
+                                style="width:100%; padding:11px 13px; border:2px solid #e0e0e0;
+                                       border-radius:10px; font-size:13px; box-sizing:border-box;
+                                       background:white;">
+                            <option value="">-- Select --</option>
+                            <option>Male</option>
+                            <option>Female</option>
+                            <option>Other</option>
+                            <option>Prefer not to say</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+
+            <input type="submit" value="CREATE ACCOUNT  &#8594;"
+                   style="width:100%; padding:14px; background:linear-gradient(135deg,#1a3a8f,#2196f3);
+                          color:white; border:none; border-radius:12px; font-size:15px;
+                          font-weight:bold; cursor:pointer; letter-spacing:1px;
+                          box-shadow:0 4px 15px rgba(33,150,243,0.4);">
+        </form>
+
+        <div style="text-align:center; margin-top:20px; padding-top:16px;
+                    border-top:1px solid #f0f0f0;">
+            <img src="https://img.icons8.com/color/16/lock-2.png" width="14"
+                 style="vertical-align:middle;">
+            &nbsp;
+            <span style="color:#888; font-size:13px;">Already have an account?</span>
+            &nbsp;
+            <a href="/login"
+               style="color:#2196f3; font-weight:bold; font-size:13px; text-decoration:none;">
+                Login Here &rarr;
+            </a>
+        </div>
+
+    </td>
+</tr>
+
+<tr>
+    <td colspan="2"
+        style="background:#f9f9f9; padding:12px 20px; text-align:center;
+               border-top:1px solid #eee; color:#aaa; font-size:11px;">
+        <img src="https://img.icons8.com/color/16/heart-with-pulse.png"
+             width="14" style="vertical-align:middle;">&nbsp;
+        Early Care &mdash; This prototype provides general health reminders and is NOT a medical diagnosis.
+    </td>
+</tr>
+</table>
+
+</td></tr>
+</table>
+</body>
+</html>

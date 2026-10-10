@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+<head>    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Early Care">
+    <meta name="theme-color" content="#11998e">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/color/192/heart-with-pulse.png">
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js');
+      }
+    </script>
+    <title>Water Reminder - Early Care</title></head>
+<body style="margin:0;padding:0;font-family:Arial,sans-serif;
+             background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);min-height:100vh;">
+
+<!-- TOP NAV -->
+<table width="100%" cellpadding="0" cellspacing="0"
+       style="background:linear-gradient(135deg,#0d47a1,#1976d2);
+              box-shadow:0 4px 15px rgba(0,0,0,0.3);">
+  <tr>
+    <td style="padding:14px 30px;" width="60">
+      <img src="https://img.icons8.com/color/48/water.png" width="38" alt="water">
+    </td>
+    <td>
+      <span style="color:white;font-size:20px;font-weight:bold;letter-spacing:2px;">EARLY CARE</span><br>
+      <span style="color:rgba(255,255,255,0.85);font-size:12px;">
+        Water Reminder &mdash; {{ user_name }}
+      </span>
+    </td>
+    <td align="right" style="padding:14px 30px;">
+      <a href="/dashboard"
+         style="background:rgba(255,255,255,0.2);color:white;padding:8px 20px;
+                border-radius:20px;text-decoration:none;font-size:13px;font-weight:bold;">
+        &#8592; Dashboard
+      </a>
+    </td>
+  </tr>
+</table>
+
+<!-- FLASH -->
+{% with messages = get_flashed_messages() %}{% if messages %}
+<div style="padding:10px 30px;">
+{% for msg in messages %}
+<div style="background:#d4edda;border:1px solid #28a745;border-radius:10px;
+            padding:12px 18px;color:#155724;font-size:14px;margin-top:8px;">
+  &#10003; {{ msg }}
+</div>
+{% endfor %}
+</div>
+{% endif %}{% endwith %}
+
+<div style="padding:20px 30px 30px 30px;">
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr valign="top">
+
+      <!-- LEFT: FORM -->
+      <td width="38%" style="padding-right:16px;">
+        <div style="background:white;border-radius:16px;
+                    box-shadow:0 8px 30px rgba(0,0,0,0.2);overflow:hidden;margin-bottom:16px;">
+          <div style="background:linear-gradient(135deg,#0d47a1,#1976d2);padding:16px 22px;">
+            <img src="https://img.icons8.com/color/24/water.png" width="20"
+                 style="vertical-align:middle;">
+            <b style="color:white;font-size:15px;margin-left:8px;vertical-align:middle;">
+              Set Water Reminder
+            </b>
+          </div>
+          <div style="padding:24px 24px;">
+          <form method="POST" action="/water">
+
+            <!-- Daily Goal + Unit -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:14px;">
+              <tr valign="top">
+                <td width="55%" style="padding-right:8px;">
+                  <label style="display:block;color:#444;font-weight:bold;
+                                font-size:13px;margin-bottom:5px;">Daily Water Goal</label>
+                  <input type="number" name="daily_goal" step="0.5" min="0.5" max="10" required
+                         value="{{ water_setting['daily_goal'] if water_setting else '2.0' }}"
+                         style="width:100%;padding:11px 13px;border:2px solid #90caf9;
+                                border-radius:10px;font-size:14px;box-sizing:border-box;">
+                </td>
+                <td width="45%" style="padding-left:8px;">
+                  <label style="display:block;color:#444;font-weight:bold;
+                                font-size:13px;margin-bottom:5px;">Unit</label>
+                  <select name="goal_unit"
+                          style="width:100%;padding:11px 10px;border:2px solid #90caf9;
+                                 border-radius:10px;font-size:13px;background:white;
+                                 box-sizing:border-box;">
+                    {% for u in ['Litres','Glasses'] %}
+                    <option value="{{ u }}"
+                      {% if water_setting and water_setting['goal_unit']==u %}selected{% endif %}>
+                      {{ u }}
+                    </option>
+                    {% endfor %}
+                  </select>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Frequency -->
+            <div style="margin-bottom:14px;">
+              <label style="display:block;color:#444;font-weight:bold;
+                            font-size:13px;margin-bottom:5px;">Reminder Every</label>
+              <select name="frequency_hours"
+                      style="width:100%;padding:11px 13px;border:2px solid #90caf9;
+                             border-radius:10px;font-size:13px;background:white;
+                             box-sizing:border-box;">
+                {% for h in [1,2,3,4] %}
+                <option value="{{ h }}"
+                  {% if water_setting and water_setting['frequency_hours']|int==h %}selected{% endif %}>
+                  Every {{ h }} Hour{% if h>1 %}s{% endif %}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- Start Time AM/PM -->
+            <div style="margin-bottom:14px;">
+              <label style="display:block;color:#444;font-weight:bold;
+                            font-size:13px;margin-bottom:5px;">
+                <img src="https://img.icons8.com/color/16/sunrise.png" width="14"
+                     style="vertical-align:middle;">&nbsp; Start Time (Morning)
+              </label>
+              <table cellpadding="0" cellspacing="4" width="100%">
+                <tr>
+                  <td width="34%">
+                    <select name="start_hour"
+                            style="width:100%;padding:10px 6px;border:2px solid #90caf9;
+                                   border-radius:10px;font-size:13px;background:white;">
+                      {% for h in range(1,13) %}
+                      <option value="{{ h }}"
+                        {% if sh==h|string %}selected{% endif %}>{{ h }}</option>
+                      {% endfor %}
+                    </select>
+                  </td>
+                  <td width="34%">
+                    <select name="start_min"
+                            style="width:100%;padding:10px 6px;border:2px solid #90caf9;
+                                   border-radius:10px;font-size:13px;background:white;">
+                      {% for m in ['00','15','30','45'] %}
+                      <option value="{{ m }}"
+                        {% if sm==m %}selected{% endif %}>:{{ m }}</option>
+                      {% endfor %}
+                    </select>
+                  </td>
+                  <td width="32%">
+                    <select name="start_ampm"
+                            style="width:100%;padding:10px 6px;border:2px solid #90caf9;
+                                   border-radius:10px;font-size:13px;background:white;
+                                   font-weight:bold;">
+                      <option value="AM" {% if sa=='AM' %}selected{% endif %}>AM</option>
+                      <option value="PM" {% if sa=='PM' %}selected{% endif %}>PM</option>
+                    </select>
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <!-- End Time AM/PM -->
+            <div style="margin-bottom:22px;">
+              <label style="display:block;color:#444;font-weight:bold;
+                            font-size:13px;margin-bottom:5px;">
+                <img src="https://img.icons8.com/color/16/sunset.png" width="14"
+                     style="vertical-align:middle;">&nbsp; End Time (Night)
+              </label>
+              <table cellpadding="0" cellspacing="4" width="100%">
+                <tr>
+                  <td width="34%">
+                    <select name="end_hour"
+                            style="width:100%;padding:10px 6px;border:2px solid #90caf9;
+                                   border-radius:10px;font-size:13px;background:white;">
+                      {% for h in range(1,13) %}
+                      <option value="{{ h }}"
+                        {% if eh==h|string %}selected{% endif %}>{{ h }}</option>
+                      {% endfor %}
+                    </select>
+                  </td>
+                  <td width="34%">
+                    <select name="end_min"
+                            style="width:100%;padding:10px 6px;border:2px solid #90caf9;
+                                   border-radius:10px;font-size:13px;background:white;">
+                      {% for m in ['00','15','30','45'] %}
+                      <option value="{{ m }}"
+                        {% if em==m %}selected{% endif %}>:{{ m }}</option>
+                      {% endfor %}
+                    </select>
+                  </td>
+                  <td width="32%">
+                    <select name="end_ampm"
+                            style="width:100%;padding:10px 6px;border:2px solid #90caf9;
+                                   border-radius:10px;font-size:13px;background:white;
+                                   font-weight:bold;">
+                      <option value="AM" {% if ea=='AM' %}selected{% endif %}>AM</option>
+                      <option value="PM" {% if ea=='PM' %}selected{% endif %}>PM</option>
+                    </select>
+                  </td>
+                </tr>
+              </table>
+              <small style="color:#888;font-size:11px;margin-top:3px;display:block;">
+                e.g. Start: 8 : 00 AM &nbsp; End: 8 : 00 PM
+              </small>
+            </div>
+
+            <input type="submit" value="SAVE WATER REMINDER"
+                   style="width:100%;padding:13px;
+                          background:linear-gradient(135deg,#0d47a1,#1976d2);
+                          color:white;border:none;border-radius:12px;font-size:15px;
+                          font-weight:bold;cursor:pointer;
+                          box-shadow:0 4px 12px rgba(13,71,161,0.4);">
+          </form>
+          </div>
+        </div>
+      </td>
+
+      <!-- RIGHT: CURRENT SETTINGS + TIPS -->
+      <td width="62%">
+
+        {% if water_setting %}
+        <!-- CURRENT SETTINGS -->
+        <div style="background:white;border-radius:16px;
+                    box-shadow:0 8px 30px rgba(0,0,0,0.2);overflow:hidden;margin-bottom:16px;">
+          <div style="background:linear-gradient(135deg,#00695c,#00897b);padding:15px 22px;">
+            <img src="https://img.icons8.com/color/24/ok.png" width="20"
+                 style="vertical-align:middle;">
+            <b style="color:white;font-size:14px;margin-left:8px;vertical-align:middle;">
+              Current Water Reminder Settings
+            </b>
+          </div>
+          <div style="padding:20px 24px;">
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <!-- Big goal display -->
+                <td width="40%" align="center">
+                  <div style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);
+                              border-radius:14px;padding:20px 14px;text-align:center;">
+                    <img src="https://img.icons8.com/color/64/water.png" width="48"
+                         onerror="this.style.display='none'">
+                    <div style="font-size:28px;font-weight:bold;color:#0d47a1;margin-top:8px;">
+                      {{ water_setting['daily_goal'] }}
+                    </div>
+                    <div style="color:#1565c0;font-size:14px;font-weight:bold;">
+                      {{ water_setting['goal_unit'] }} / day
+                    </div>
+                  </div>
+                </td>
+                <td width="60%" style="padding-left:20px;">
+                  <table width="100%" cellpadding="8" cellspacing="0"
+                         style="font-size:13px;border-collapse:collapse;">
+                    <tr style="border-bottom:1px solid #f0f0f0;">
+                      <td style="color:#888;">Frequency</td>
+                      <td style="font-weight:bold;color:#333;">
+                        Every {{ water_setting['frequency_hours'] }} hour(s)
+                      </td>
+                    </tr>
+                    <tr style="border-bottom:1px solid #f0f0f0;">
+                      <td style="color:#888;">Start Time</td>
+                      <td style="font-weight:bold;color:#1976d2;">
+                        {{ sh }}:{{ sm }} {{ sa }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="color:#888;">End Time</td>
+                      <td style="font-weight:bold;color:#1976d2;">
+                        {{ eh }}:{{ em }} {{ ea }}
+                      </td>
+                    </tr>
+                  </table>
+                  <div style="background:#e3f2fd;border-radius:10px;
+                              padding:10px 14px;margin-top:12px;
+                              font-size:12px;color:#0d47a1;text-align:center;">
+                    Reminders will appear in
+                    <a href="/notifications" style="color:#1976d2;font-weight:bold;">
+                      Notifications
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- HYDRATION TIPS -->
+        <div style="background:white;border-radius:16px;
+                    box-shadow:0 8px 30px rgba(0,0,0,0.2);overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#1565c0,#42a5f5);padding:15px 22px;">
+            <img src="https://img.icons8.com/color/24/water.png" width="20"
+                 style="vertical-align:middle;">
+            <b style="color:white;font-size:14px;margin-left:8px;vertical-align:middle;">
+              Hydration Tips
+            </b>
+          </div>
+          <div style="padding:20px 24px;">
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td width="50%" style="vertical-align:top;padding-right:16px;">
+                  {% for icon_url, tip in [
+                    ('https://img.icons8.com/color/24/sunrise.png',   'Drink a glass of water first thing in the morning.'),
+                    ('https://img.icons8.com/color/24/water.png',     'Keep a water bottle at your desk or study table.'),
+                    ('https://img.icons8.com/color/24/meal.png',      'Drink water before every meal.')
+                  ] %}
+                  <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;">
+                    <img src="{{ icon_url }}" width="20" alt="tip"
+                         style="margin-top:2px;" onerror="this.style.display='none'">
+                    <span style="color:#555;font-size:13px;line-height:1.5;">{{ tip }}</span>
+                  </div>
+                  {% endfor %}
+                </td>
+                <td width="50%" style="vertical-align:top;">
+                  {% for icon_url, tip in [
+                    ('https://img.icons8.com/color/24/running.png',   'Increase intake during exercise and hot weather.'),
+                    ('https://img.icons8.com/color/24/no-coffee.png', 'Avoid sugary drinks — water is always the best choice.'),
+                    ('https://img.icons8.com/color/24/heart-with-pulse.png', '2 litres daily keeps you healthy and energised.')
+                  ] %}
+                  <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;">
+                    <img src="{{ icon_url }}" width="20" alt="tip"
+                         style="margin-top:2px;" onerror="this.style.display='none'">
+                    <span style="color:#555;font-size:13px;line-height:1.5;">{{ tip }}</span>
+                  </div>
+                  {% endfor %}
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+      </td>
+    </tr>
+  </table>
+</div>
+
+<!-- FOOTER -->
+<div style="text-align:center;padding:14px;color:rgba(255,255,255,0.4);font-size:12px;">
+  <img src="https://img.icons8.com/color/16/heart-with-pulse.png" width="13"
+       style="vertical-align:middle;opacity:0.6;">
+  &nbsp;Early Care &mdash; NOT a medical diagnosis.
+</div>
+
+</body>
+</html>

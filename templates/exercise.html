@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+<head>    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Early Care">
+    <meta name="theme-color" content="#11998e">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/color/192/heart-with-pulse.png">
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js');
+      }
+    </script>
+    <title>Exercise Reminder - Early Care</title></head>
+<body style="margin:0;padding:0;font-family:Arial,sans-serif;
+             background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);min-height:100vh;">
+
+<!-- TOP NAV -->
+<table width="100%" cellpadding="0" cellspacing="0"
+       style="background:linear-gradient(135deg,#1b5e20,#43a047);
+              box-shadow:0 4px 15px rgba(0,0,0,0.3);">
+  <tr>
+    <td style="padding:14px 30px;" width="60">
+      <img src="https://img.icons8.com/color/48/running.png" width="38" alt="exercise">
+    </td>
+    <td style="padding:14px 10px;">
+      <span style="color:white;font-size:20px;font-weight:bold;letter-spacing:2px;">EARLY CARE</span><br>
+      <span style="color:rgba(255,255,255,0.85);font-size:12px;">
+        Exercise Reminder &mdash; {{ user_name }}
+      </span>
+    </td>
+    <td align="right" style="padding:14px 30px;">
+      <a href="/dashboard"
+         style="background:rgba(255,255,255,0.2);color:white;padding:8px 20px;
+                border-radius:20px;text-decoration:none;font-size:13px;font-weight:bold;">
+        &#8592; Dashboard
+      </a>
+    </td>
+  </tr>
+</table>
+
+<!-- FLASH -->
+{% with messages = get_flashed_messages() %}{% if messages %}
+<div style="padding:10px 30px;">
+  {% for msg in messages %}
+  <div style="background:#d4edda;border:1px solid #28a745;border-radius:10px;
+              padding:12px 18px;color:#155724;font-size:14px;margin-top:8px;">
+    &#10003; {{ msg }}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}{% endwith %}
+
+<!-- EXERCISE TYPE VISUAL BANNER -->
+<div style="padding:20px 30px 10px 30px;">
+  <table width="100%" cellpadding="0" cellspacing="10">
+    <tr>
+      {% for img, label, bg, border in [
+        ('https://img.icons8.com/color/64/walking.png',         'Walking',    '#e8f5e9','#4caf50'),
+        ('https://img.icons8.com/color/64/running.png',         'Running',    '#fff3e0','#ff9800'),
+        ('https://img.icons8.com/color/64/yoga.png',            'Yoga',       '#fce4ec','#e91e63'),
+        ('https://img.icons8.com/color/64/stretching.png',      'Stretching', '#e3f2fd','#2196f3'),
+        ('https://img.icons8.com/color/64/jumping-rope.png',    'Skipping',   '#ede7f6','#673ab7'),
+        ('https://img.icons8.com/color/64/weightlifting.png',   'Gym',        '#e0f2f1','#009688')
+      ] %}
+      <td align="center" width="16%"
+          style="background:{{ bg }};border:2px solid {{ border }};border-radius:14px;
+                 padding:14px 8px;">
+        <img src="{{ img }}" width="44" alt="{{ label }}"
+             onerror="this.style.display='none'">
+        <br>
+        <span style="font-size:12px;font-weight:bold;color:#333;margin-top:5px;
+                     display:block;">{{ label }}</span>
+      </td>
+      {% endfor %}
+    </tr>
+  </table>
+</div>
+
+<!-- MAIN CONTENT -->
+<div style="padding:16px 30px 30px 30px;">
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr valign="top">
+
+      <!-- ADD FORM -->
+      <td width="38%" style="padding-right:16px;">
+        <div style="background:white;border-radius:16px;
+                    box-shadow:0 8px 30px rgba(0,0,0,0.2);overflow:hidden;">
+
+          <!-- Card Header -->
+          <div style="background:linear-gradient(135deg,#1b5e20,#43a047);padding:16px 22px;">
+            <img src="https://img.icons8.com/color/24/running.png" width="20"
+                 style="vertical-align:middle;">
+            <b style="color:white;font-size:15px;margin-left:8px;vertical-align:middle;">
+              Add Exercise Reminder
+            </b>
+          </div>
+
+          <div style="padding:24px 24px;">
+          <form method="POST" action="/exercise">
+            <input type="hidden" name="action" value="add">
+
+            <!-- Exercise Type -->
+            <div style="margin-bottom:16px;">
+              <label style="display:block;color:#444;font-weight:bold;
+                            font-size:13px;margin-bottom:6px;">
+                <img src="https://img.icons8.com/color/16/running.png" width="14"
+                     style="vertical-align:middle;">&nbsp; Exercise Type *
+              </label>
+              <select name="exercise_type" required
+                      style="width:100%;padding:11px 14px;border:2px solid #a5d6a7;
+                             border-radius:10px;font-size:14px;background:white;
+                             box-sizing:border-box;">
+                <option value="">-- Select Exercise --</option>
+                <option value="Walking">Walking</option>
+                <option value="Running">Running</option>
+                <option value="Yoga">Yoga</option>
+                <option value="Stretching">Stretching</option>
+                <option value="Skipping">Skipping</option>
+                <option value="Cycling">Cycling</option>
+                <option value="Swimming">Swimming</option>
+                <option value="Gym Workout">Gym Workout</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <!-- Reminder Time AM/PM -->
+            <div style="margin-bottom:16px;">
+              <label style="display:block;color:#444;font-weight:bold;
+                            font-size:13px;margin-bottom:6px;">
+                <img src="https://img.icons8.com/color/16/clock.png" width="14"
+                     style="vertical-align:middle;">&nbsp; Reminder Time *
+              </label>
+              <table cellpadding="0" cellspacing="4" width="100%">
+                <tr>
+                  <td width="34%">
+                    <select name="reminder_hour"
+                            style="width:100%;padding:11px 8px;border:2px solid #a5d6a7;
+                                   border-radius:10px;font-size:14px;background:white;">
+                      {% for h in range(1,13) %}
+                      <option value="{{ h }}" {% if h==6 %}selected{% endif %}>{{ h }}</option>
+                      {% endfor %}
+                    </select>
+                  </td>
+                  <td width="34%">
+                    <select name="reminder_min"
+                            style="width:100%;padding:11px 8px;border:2px solid #a5d6a7;
+                                   border-radius:10px;font-size:14px;background:white;">
+                      {% for m in ['00','05','10','15','20','25','30','35','40','45','50','55'] %}
+                      <option value="{{ m }}">:{{ m }}</option>
+                      {% endfor %}
+                    </select>
+                  </td>
+                  <td width="32%">
+                    <select name="reminder_ampm"
+                            style="width:100%;padding:11px 8px;border:2px solid #a5d6a7;
+                                   border-radius:10px;font-size:14px;background:white;
+                                   font-weight:bold;">
+                      <option value="AM" selected>AM</option>
+                      <option value="PM">PM</option>
+                    </select>
+                  </td>
+                </tr>
+              </table>
+              <small style="color:#888;font-size:11px;margin-top:4px;display:block;">
+                Example: 6 : 00 AM or 5 : 30 PM
+              </small>
+            </div>
+
+            <!-- Duration -->
+            <div style="margin-bottom:16px;">
+              <label style="display:block;color:#444;font-weight:bold;
+                            font-size:13px;margin-bottom:6px;">
+                <img src="https://img.icons8.com/color/16/timer.png" width="14"
+                     style="vertical-align:middle;">&nbsp; Duration *
+              </label>
+              <select name="duration_min" required
+                      style="width:100%;padding:11px 14px;border:2px solid #a5d6a7;
+                             border-radius:10px;font-size:14px;background:white;
+                             box-sizing:border-box;">
+                <option value="">-- Select Duration --</option>
+                <option value="10">10 minutes</option>
+                <option value="15">15 minutes</option>
+                <option value="20">20 minutes</option>
+                <option value="30">30 minutes</option>
+                <option value="45">45 minutes</option>
+                <option value="60">60 minutes (1 hour)</option>
+                <option value="90">90 minutes</option>
+              </select>
+            </div>
+
+            <!-- Frequency -->
+            <div style="margin-bottom:22px;">
+              <label style="display:block;color:#444;font-weight:bold;
+                            font-size:13px;margin-bottom:6px;">
+                <img src="https://img.icons8.com/color/16/calendar.png" width="14"
+                     style="vertical-align:middle;">&nbsp; Frequency
+              </label>
+              <select name="frequency"
+                      style="width:100%;padding:11px 14px;border:2px solid #a5d6a7;
+                             border-radius:10px;font-size:14px;background:white;
+                             box-sizing:border-box;">
+                <option value="">-- Select Frequency --</option>
+                <option value="Daily">Daily</option>
+                <option value="Weekdays (Mon-Fri)">Weekdays (Mon-Fri)</option>
+                <option value="Weekends (Sat-Sun)">Weekends (Sat-Sun)</option>
+                <option value="3 times a week">3 times a week</option>
+                <option value="Alternate days">Alternate days</option>
+              </select>
+            </div>
+
+            <input type="submit" value="ADD REMINDER"
+                   style="width:100%;padding:13px;
+                          background:linear-gradient(135deg,#1b5e20,#43a047);
+                          color:white;border:none;border-radius:12px;font-size:15px;
+                          font-weight:bold;cursor:pointer;
+                          box-shadow:0 4px 12px rgba(27,94,32,0.4);">
+          </form>
+          </div>
+        </div>
+
+        <!-- HEALTH TIP CARD -->
+        <div style="background:white;border-radius:16px;
+                    box-shadow:0 8px 30px rgba(0,0,0,0.2);
+                    overflow:hidden;margin-top:16px;">
+          <div style="background:linear-gradient(135deg,#004d40,#00897b);padding:14px 22px;">
+            <img src="https://img.icons8.com/color/24/heart-with-pulse.png" width="20"
+                 style="vertical-align:middle;">
+            <b style="color:white;font-size:14px;margin-left:8px;vertical-align:middle;">
+              Benefits of Exercise
+            </b>
+          </div>
+          <div style="padding:18px 22px;">
+            {% for icon_url, benefit in [
+              ('https://img.icons8.com/color/24/like.png',    'Improves heart health and blood circulation'),
+              ('https://img.icons8.com/color/24/scale.png',   'Helps maintain a healthy body weight'),
+              ('https://img.icons8.com/color/24/smiling.png', 'Reduces stress and improves mood'),
+              ('https://img.icons8.com/color/24/flash-on.png','Increases energy levels throughout the day'),
+              ('https://img.icons8.com/color/24/muscle.png',  'Strengthens muscles and flexibility')
+            ] %}
+            <div style="display:flex;align-items:center;margin-bottom:10px;gap:10px;">
+              <img src="{{ icon_url }}" width="22" alt="benefit"
+                   onerror="this.style.display='none'">
+              <span style="color:#555;font-size:13px;">{{ benefit }}</span>
+            </div>
+            {% endfor %}
+            <div style="background:#e8f5e9;border-radius:10px;padding:10px 14px;
+                        margin-top:10px;font-size:12px;color:#2e7d32;text-align:center;">
+              <b>30 minutes of exercise daily keeps you healthy!</b>
+            </div>
+          </div>
+        </div>
+      </td>
+
+      <!-- EXERCISE LIST -->
+      <td width="62%">
+        <div style="background:white;border-radius:16px;
+                    box-shadow:0 8px 30px rgba(0,0,0,0.2);overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#1a3a8f,#1976d2);padding:16px 22px;">
+            <img src="https://img.icons8.com/color/24/list.png" width="20"
+                 style="vertical-align:middle;">
+            <b style="color:white;font-size:15px;margin-left:8px;vertical-align:middle;">
+              My Exercise Reminders
+            </b>
+          </div>
+          <div style="padding:20px 22px;">
+
+          {% if all_exercises %}
+            {% for ex in all_exercises %}
+            <div style="background:{% if loop.index%3==1 %}#f1f8e9{% elif loop.index%3==2 %}#e8eaf6{% else %}#e3f2fd{% endif %};
+                        border-radius:14px;padding:16px 20px;margin-bottom:12px;
+                        border-left:5px solid {% if loop.index%3==1 %}#7cb342{% elif loop.index%3==2 %}#5c6bc0{% else %}#1e88e5{% endif %};">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr valign="middle">
+                  <td width="60">
+                    {% if ex['exercise_type']=='Walking' %}
+                      <img src="https://img.icons8.com/color/48/walking.png" width="40"
+                           onerror="this.style.display='none'">
+                    {% elif ex['exercise_type']=='Running' %}
+                      <img src="https://img.icons8.com/color/48/running.png" width="40"
+                           onerror="this.style.display='none'">
+                    {% elif ex['exercise_type']=='Yoga' %}
+                      <img src="https://img.icons8.com/color/48/yoga.png" width="40"
+                           onerror="this.style.display='none'">
+                    {% elif ex['exercise_type']=='Cycling' %}
+                      <img src="https://img.icons8.com/color/48/cycling.png" width="40"
+                           onerror="this.style.display='none'">
+                    {% else %}
+                      <img src="https://img.icons8.com/color/48/weightlifting.png" width="40"
+                           onerror="this.style.display='none'">
+                    {% endif %}
+                  </td>
+                  <td style="padding-left:14px;">
+                    <b style="color:#333;font-size:15px;">{{ ex['exercise_type'] }}</b>
+                    <br>
+                    <table cellpadding="0" cellspacing="0" style="margin-top:6px;">
+                      <tr>
+                        <td style="padding-right:16px;">
+                          <img src="https://img.icons8.com/color/16/clock.png" width="14"
+                               style="vertical-align:middle;">
+                          <span style="font-size:13px;color:#555;font-weight:bold;">
+                            &nbsp;{{ ex_times[ex['id']] if ex['id'] in ex_times else ex['reminder_time'] }}
+                          </span>
+                        </td>
+                        <td style="padding-right:16px;">
+                          <img src="https://img.icons8.com/color/16/timer.png" width="14"
+                               style="vertical-align:middle;">
+                          <span style="font-size:13px;color:#666;">
+                            &nbsp;{{ ex['duration_min'] }} min
+                          </span>
+                        </td>
+                        <td>
+                          <img src="https://img.icons8.com/color/16/calendar.png" width="14"
+                               style="vertical-align:middle;">
+                          <span style="font-size:13px;color:#666;">
+                            &nbsp;{{ ex['frequency'] or 'Daily' }}
+                          </span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                  <td align="right" valign="top">
+                    <form method="POST" action="/exercise"
+                          onsubmit="return confirm('Delete this exercise reminder?')">
+                      <input type="hidden" name="action" value="delete">
+                      <input type="hidden" name="ex_id" value="{{ ex['id'] }}">
+                      <input type="submit" value="Delete"
+                             style="background:#f44336;color:white;border:none;
+                                    padding:7px 16px;border-radius:8px;
+                                    font-size:12px;cursor:pointer;font-weight:bold;">
+                    </form>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            {% endfor %}
+          {% else %}
+          <div style="text-align:center;padding:40px 20px;">
+            <img src="https://img.icons8.com/color/80/running.png" width="64"
+                 style="opacity:0.5;" onerror="this.style.display='none'">
+            <p style="color:#aaa;font-size:15px;margin-top:12px;">
+              No exercise reminders yet.<br>
+              <span style="font-size:13px;">Use the form on the left to add your first one!</span>
+            </p>
+          </div>
+          {% endif %}
+
+          </div>
+        </div>
+      </td>
+
+    </tr>
+  </table>
+</div>
+
+<!-- FOOTER -->
+<div style="text-align:center;padding:14px;color:rgba(255,255,255,0.4);font-size:12px;">
+  <img src="https://img.icons8.com/color/16/heart-with-pulse.png" width="13"
+       style="vertical-align:middle;opacity:0.6;">
+  &nbsp;Early Care &mdash; This prototype provides general health reminders and is NOT a medical diagnosis.
+</div>
+
+</body>
+</html>

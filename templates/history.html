@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Early Care">
+    <meta name="theme-color" content="#11998e">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/color/192/heart-with-pulse.png">
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js');
+      }
+    </script>
+    <title>Reminder History - Early Care</title></head>
+<body style="margin:0;padding:0;font-family:Arial,sans-serif;
+             background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);min-height:100vh;">
+
+<!-- TOP NAV -->
+<table width="100%" cellpadding="0" cellspacing="0"
+       style="background:linear-gradient(135deg,#004d40,#00897b);
+              box-shadow:0 4px 15px rgba(0,0,0,0.3);">
+  <tr>
+    <td style="padding:14px 30px;" width="60">
+      <img src="https://img.icons8.com/color/48/time-machine.png" width="38" alt="history">
+    </td>
+    <td>
+      <span style="color:white;font-size:20px;font-weight:bold;letter-spacing:2px;">EARLY CARE</span><br>
+      <span style="color:rgba(255,255,255,0.85);font-size:12px;">
+        Reminder History &mdash; {{ user_name }}
+      </span>
+    </td>
+    <td align="right" style="padding:14px 30px;">
+      <a href="/notifications"
+         style="background:rgba(255,255,255,0.2);color:white;padding:7px 16px;
+                border-radius:20px;text-decoration:none;font-size:13px;margin-right:8px;">
+        Notifications
+      </a>
+      <a href="/dashboard"
+         style="background:rgba(255,255,255,0.2);color:white;padding:7px 16px;
+                border-radius:20px;text-decoration:none;font-size:13px;">
+        &#8592; Dashboard
+      </a>
+    </td>
+  </tr>
+</table>
+
+<div style="padding:20px 30px 30px 30px;">
+
+{% if all_history %}
+
+{% set taken   = all_history | selectattr('status','equalto','Taken')   | list %}
+{% set skipped = all_history | selectattr('status','equalto','Skipped') | list %}
+{% set snoozed = all_history | selectattr('status','equalto','Snoozed') | list %}
+
+<!-- STATS CARDS -->
+<table width="100%" cellpadding="0" cellspacing="12" style="margin-bottom:18px;">
+  <tr>
+    <td width="25%">
+      <div style="background:linear-gradient(135deg,#1a3a8f,#1976d2);border-radius:14px;
+                  padding:18px 16px;text-align:center;
+                  box-shadow:0 6px 20px rgba(0,0,0,0.2);">
+        <img src="https://img.icons8.com/color/48/list.png" width="36"
+             onerror="this.style.display='none'">
+        <div style="font-size:30px;font-weight:bold;color:white;margin-top:6px;">
+          {{ all_history|length }}
+        </div>
+        <div style="color:rgba(255,255,255,0.85);font-size:13px;">Total Records</div>
+      </div>
+    </td>
+    <td width="25%">
+      <div style="background:linear-gradient(135deg,#1b5e20,#43a047);border-radius:14px;
+                  padding:18px 16px;text-align:center;
+                  box-shadow:0 6px 20px rgba(0,0,0,0.2);">
+        <img src="https://img.icons8.com/color/48/ok.png" width="36"
+             onerror="this.style.display='none'">
+        <div style="font-size:30px;font-weight:bold;color:white;margin-top:6px;">
+          {{ taken|length }}
+        </div>
+        <div style="color:rgba(255,255,255,0.85);font-size:13px;">Taken</div>
+      </div>
+    </td>
+    <td width="25%">
+      <div style="background:linear-gradient(135deg,#b71c1c,#e53935);border-radius:14px;
+                  padding:18px 16px;text-align:center;
+                  box-shadow:0 6px 20px rgba(0,0,0,0.2);">
+        <img src="https://img.icons8.com/color/48/cancel.png" width="36"
+             onerror="this.style.display='none'">
+        <div style="font-size:30px;font-weight:bold;color:white;margin-top:6px;">
+          {{ skipped|length }}
+        </div>
+        <div style="color:rgba(255,255,255,0.85);font-size:13px;">Skipped</div>
+      </div>
+    </td>
+    <td width="25%">
+      <div style="background:linear-gradient(135deg,#e65100,#fb8c00);border-radius:14px;
+                  padding:18px 16px;text-align:center;
+                  box-shadow:0 6px 20px rgba(0,0,0,0.2);">
+        <img src="https://img.icons8.com/color/48/clock.png" width="36"
+             onerror="this.style.display='none'">
+        <div style="font-size:30px;font-weight:bold;color:white;margin-top:6px;">
+          {{ snoozed|length }}
+        </div>
+        <div style="color:rgba(255,255,255,0.85);font-size:13px;">Snoozed</div>
+      </div>
+    </td>
+  </tr>
+</table>
+
+<!-- HISTORY TABLE -->
+<div style="background:white;border-radius:16px;
+            box-shadow:0 8px 30px rgba(0,0,0,0.2);overflow:hidden;margin-bottom:18px;">
+  <div style="background:linear-gradient(135deg,#004d40,#00897b);padding:15px 22px;">
+    <img src="https://img.icons8.com/color/24/time-machine.png" width="20"
+         style="vertical-align:middle;">
+    <b style="color:white;font-size:15px;margin-left:8px;vertical-align:middle;">
+      Complete Reminder History
+    </b>
+  </div>
+  <div style="padding:0;">
+  <table width="100%" cellpadding="0" cellspacing="0"
+         style="border-collapse:collapse;font-size:13px;">
+    <tr style="background:#f8f9fa;">
+      <th style="padding:11px 16px;text-align:center;border-bottom:2px solid #eee;color:#666;">#</th>
+      <th style="padding:11px 16px;text-align:left;border-bottom:2px solid #eee;color:#666;">Reminder</th>
+      <th style="padding:11px 16px;text-align:center;border-bottom:2px solid #eee;color:#666;">Type</th>
+      <th style="padding:11px 16px;text-align:center;border-bottom:2px solid #eee;color:#666;">Date</th>
+      <th style="padding:11px 16px;text-align:center;border-bottom:2px solid #eee;color:#666;">Scheduled Time</th>
+      <th style="padding:11px 16px;text-align:center;border-bottom:2px solid #eee;color:#666;">Status</th>
+      <th style="padding:11px 16px;text-align:center;border-bottom:2px solid #eee;color:#666;">Logged At</th>
+    </tr>
+    {% for h in all_history %}
+    <tr style="border-bottom:1px solid #f5f5f5;
+               {% if loop.even %}background:#fafafa;{% endif %}">
+      <td style="padding:10px 16px;text-align:center;color:#aaa;">{{ loop.index }}</td>
+      <td style="padding:10px 16px;color:#444;max-width:220px;">{{ h['reminder_name'] }}</td>
+      <td style="padding:10px 16px;text-align:center;">
+        {% if h['reminder_type']=='Medicine' %}
+          <img src="https://img.icons8.com/color/20/pill.png" width="16"
+               style="vertical-align:middle;" onerror="this.style.display='none'">
+          <span style="background:#fce4ec;color:#880e4f;padding:2px 8px;
+                       border-radius:8px;font-size:11px;margin-left:4px;">Medicine</span>
+        {% elif h['reminder_type']=='Water' %}
+          <img src="https://img.icons8.com/color/20/water.png" width="16"
+               style="vertical-align:middle;" onerror="this.style.display='none'">
+          <span style="background:#e3f2fd;color:#0d47a1;padding:2px 8px;
+                       border-radius:8px;font-size:11px;margin-left:4px;">Water</span>
+        {% elif h['reminder_type']=='Exercise' %}
+          <img src="https://img.icons8.com/color/20/running.png" width="16"
+               style="vertical-align:middle;" onerror="this.style.display='none'">
+          <span style="background:#e8f5e9;color:#1b5e20;padding:2px 8px;
+                       border-radius:8px;font-size:11px;margin-left:4px;">Exercise</span>
+        {% else %}
+          <img src="https://img.icons8.com/color/20/stethoscope.png" width="16"
+               style="vertical-align:middle;" onerror="this.style.display='none'">
+          <span style="background:#fff3e0;color:#e65100;padding:2px 8px;
+                       border-radius:8px;font-size:11px;margin-left:4px;">Doctor</span>
+        {% endif %}
+      </td>
+      <td style="padding:10px 16px;text-align:center;color:#666;font-size:12px;">
+        {{ h['date'] or '-' }}
+      </td>
+      <td style="padding:10px 16px;text-align:center;color:#666;font-size:12px;">
+        {{ h['scheduled_time'] or '-' }}
+      </td>
+      <td style="padding:10px 16px;text-align:center;">
+        <span style="padding:4px 12px;border-radius:10px;font-size:12px;font-weight:bold;
+            {% if h['status']=='Taken' %}background:#e8f5e9;color:#2e7d32;
+            {% elif h['status']=='Skipped' %}background:#ffebee;color:#c62828;
+            {% else %}background:#fff3e0;color:#e65100;{% endif %}">
+          {% if h['status']=='Taken' %}
+            <img src="https://img.icons8.com/color/14/ok.png" width="12"
+                 style="vertical-align:middle;" onerror="this.style.display='none'">
+          {% elif h['status']=='Skipped' %}
+            <img src="https://img.icons8.com/color/14/cancel.png" width="12"
+                 style="vertical-align:middle;" onerror="this.style.display='none'">
+          {% else %}
+            <img src="https://img.icons8.com/color/14/clock.png" width="12"
+                 style="vertical-align:middle;" onerror="this.style.display='none'">
+          {% endif %}
+          &nbsp;{{ h['status'] }}
+        </span>
+      </td>
+      <td style="padding:10px 16px;text-align:center;color:#aaa;font-size:11px;">
+        {{ h['logged_at'] }}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  </div>
+</div>
+
+<!-- STATUS GUIDE -->
+<table width="100%" cellpadding="0" cellspacing="12">
+  <tr>
+    <td width="33%">
+      <div style="background:#e8f5e9;border-radius:12px;padding:14px 18px;
+                  border-left:4px solid #43a047;">
+        <b style="color:#2e7d32;font-size:13px;">
+          <img src="https://img.icons8.com/color/18/ok.png" width="16"
+               style="vertical-align:middle;" onerror="this.style.display='none'">
+          &nbsp;Taken
+        </b>
+        <p style="color:#555;font-size:12px;margin:5px 0 0 0;">
+          Medicine taken / reminder completed on time.
+        </p>
+      </div>
+    </td>
+    <td width="33%">
+      <div style="background:#ffebee;border-radius:12px;padding:14px 18px;
+                  border-left:4px solid #e53935;">
+        <b style="color:#c62828;font-size:13px;">
+          <img src="https://img.icons8.com/color/18/cancel.png" width="16"
+               style="vertical-align:middle;" onerror="this.style.display='none'">
+          &nbsp;Skipped
+        </b>
+        <p style="color:#555;font-size:12px;margin:5px 0 0 0;">
+          Reminder was skipped for that time slot.
+        </p>
+      </div>
+    </td>
+    <td width="33%">
+      <div style="background:#fff3e0;border-radius:12px;padding:14px 18px;
+                  border-left:4px solid #fb8c00;">
+        <b style="color:#e65100;font-size:13px;">
+          <img src="https://img.icons8.com/color/18/clock.png" width="16"
+               style="vertical-align:middle;" onerror="this.style.display='none'">
+          &nbsp;Snoozed
+        </b>
+        <p style="color:#555;font-size:12px;margin:5px 0 0 0;">
+          Reminder was postponed by 10 minutes.
+        </p>
+      </div>
+    </td>
+  </tr>
+</table>
+
+{% else %}
+<div style="background:white;border-radius:16px;padding:60px 30px;text-align:center;
+            box-shadow:0 8px 30px rgba(0,0,0,0.2);">
+  <img src="https://img.icons8.com/color/80/time-machine.png" width="64"
+       style="opacity:0.5;" onerror="this.style.display='none'">
+  <p style="color:#aaa;font-size:15px;margin-top:16px;">No reminder history yet.</p>
+  <p style="color:#bbb;font-size:13px;">
+    History is created when you Mark as Taken, Snooze or Skip a reminder from
+    <a href="/notifications" style="color:#00897b;font-weight:bold;">Notifications</a>.
+  </p>
+</div>
+{% endif %}
+
+</div>
+
+<!-- FOOTER -->
+<div style="text-align:center;padding:14px;color:rgba(255,255,255,0.4);font-size:12px;">
+  <img src="https://img.icons8.com/color/16/heart-with-pulse.png" width="13"
+       style="vertical-align:middle;opacity:0.6;">
+  &nbsp;Early Care &mdash; NOT a medical diagnosis.
+</div>
+
+</body>
+</html>

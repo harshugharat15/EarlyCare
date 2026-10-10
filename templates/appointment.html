@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Early Care">
+    <meta name="theme-color" content="#11998e">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/color/192/heart-with-pulse.png">
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js');
+      }
+    </script>
+    <title>Doctor Appointment - Early Care</title></head>
+<body style="margin:0;padding:0;font-family:Arial,sans-serif;
+             background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);min-height:100vh;">
+
+<!-- TOP NAV -->
+<table width="100%" cellpadding="0" cellspacing="0"
+       style="background:linear-gradient(135deg,#bf360c,#f57c00);
+              box-shadow:0 4px 15px rgba(0,0,0,0.3);">
+  <tr>
+    <td style="padding:14px 30px;" width="60">
+      <img src="https://img.icons8.com/color/48/stethoscope.png" width="38" alt="doctor">
+    </td>
+    <td style="padding:14px 10px;">
+      <span style="color:white;font-size:20px;font-weight:bold;letter-spacing:2px;">EARLY CARE</span><br>
+      <span style="color:rgba(255,255,255,0.85);font-size:12px;">
+        Doctor Appointment &mdash; {{ user_name }}
+      </span>
+    </td>
+    <td align="right" style="padding:14px 30px;">
+      <a href="/dashboard"
+         style="background:rgba(255,255,255,0.2);color:white;padding:8px 20px;
+                border-radius:20px;text-decoration:none;font-size:13px;font-weight:bold;">
+        &#8592; Dashboard
+      </a>
+    </td>
+  </tr>
+</table>
+
+<!-- FLASH -->
+{% with messages = get_flashed_messages() %}{% if messages %}
+<div style="padding:10px 30px;">
+{% for msg in messages %}
+<div style="background:#d4edda;border:1px solid #28a745;border-radius:10px;
+            padding:12px 18px;color:#155724;font-size:14px;margin-top:8px;">
+  &#10003; {{ msg }}
+</div>
+{% endfor %}
+</div>
+{% endif %}{% endwith %}
+
+<!-- MAIN CONTENT -->
+<div style="padding:20px 30px 30px 30px;">
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr valign="top">
+
+      <!-- LEFT: ADD FORM + INFO -->
+      <td width="36%" style="padding-right:16px;">
+
+        <!-- ADD FORM -->
+        <div style="background:white;border-radius:16px;
+                    box-shadow:0 8px 30px rgba(0,0,0,0.2);overflow:hidden;margin-bottom:16px;">
+          <div style="background:linear-gradient(135deg,#bf360c,#f57c00);padding:16px 22px;">
+            <img src="https://img.icons8.com/color/24/stethoscope.png" width="20"
+                 style="vertical-align:middle;">
+            <b style="color:white;font-size:15px;margin-left:8px;vertical-align:middle;">
+              Schedule Appointment
+            </b>
+          </div>
+          <div style="padding:24px 24px;">
+          <form method="POST" action="/appointment">
+            <input type="hidden" name="action" value="add">
+
+            <!-- Doctor Name -->
+            <div style="margin-bottom:16px;">
+              <label style="display:block;color:#444;font-weight:bold;
+                            font-size:13px;margin-bottom:6px;">
+                <img src="https://img.icons8.com/color/16/doctor-male.png" width="14"
+                     style="vertical-align:middle;">&nbsp; Doctor Name *
+              </label>
+              <input type="text" name="doctor_name"
+                     placeholder="e.g. Dr. Sharma" required
+                     style="width:100%;padding:11px 14px;border:2px solid #ffcc80;
+                            border-radius:10px;font-size:14px;box-sizing:border-box;">
+            </div>
+
+            <!-- Appointment Date -->
+            <div style="margin-bottom:16px;">
+              <label style="display:block;color:#444;font-weight:bold;
+                            font-size:13px;margin-bottom:6px;">
+                <img src="https://img.icons8.com/color/16/calendar.png" width="14"
+                     style="vertical-align:middle;">&nbsp; Appointment Date *
+              </label>
+              <input type="date" name="appointment_date"
+                     min="{{ today }}" required
+                     style="width:100%;padding:11px 14px;border:2px solid #ffcc80;
+                            border-radius:10px;font-size:14px;box-sizing:border-box;">
+            </div>
+
+            <!-- Appointment Time AM/PM -->
+            <div style="margin-bottom:16px;">
+              <label style="display:block;color:#444;font-weight:bold;
+                            font-size:13px;margin-bottom:6px;">
+                <img src="https://img.icons8.com/color/16/clock.png" width="14"
+                     style="vertical-align:middle;">&nbsp; Appointment Time *
+              </label>
+              <table cellpadding="0" cellspacing="4" width="100%">
+                <tr>
+                  <td width="34%">
+                    <select name="appt_hour"
+                            style="width:100%;padding:11px 6px;border:2px solid #ffcc80;
+                                   border-radius:10px;font-size:14px;background:white;">
+                      {% for h in range(1,13) %}
+                      <option value="{{ h }}" {% if h==10 %}selected{% endif %}>{{ h }}</option>
+                      {% endfor %}
+                    </select>
+                  </td>
+                  <td width="34%">
+                    <select name="appt_min"
+                            style="width:100%;padding:11px 6px;border:2px solid #ffcc80;
+                                   border-radius:10px;font-size:14px;background:white;">
+                      {% for m in ['00','15','30','45'] %}
+                      <option value="{{ m }}">:{{ m }}</option>
+                      {% endfor %}
+                    </select>
+                  </td>
+                  <td width="32%">
+                    <select name="appt_ampm"
+                            style="width:100%;padding:11px 6px;border:2px solid #ffcc80;
+                                   border-radius:10px;font-size:14px;background:white;
+                                   font-weight:bold;">
+                      <option value="AM">AM</option>
+                      <option value="PM" selected>PM</option>
+                    </select>
+                  </td>
+                </tr>
+              </table>
+              <small style="color:#888;font-size:11px;margin-top:4px;display:block;">
+                Example: 10 : 00 AM or 3 : 30 PM
+              </small>
+            </div>
+
+            <!-- Notes -->
+            <div style="margin-bottom:22px;">
+              <label style="display:block;color:#444;font-weight:bold;
+                            font-size:13px;margin-bottom:6px;">
+                <img src="https://img.icons8.com/color/16/note.png" width="14"
+                     style="vertical-align:middle;">&nbsp; Notes
+              </label>
+              <textarea name="notes" rows="3"
+                        placeholder="e.g. Bring reports, follow-up visit"
+                        style="width:100%;padding:11px 14px;border:2px solid #ffcc80;
+                               border-radius:10px;font-size:13px;box-sizing:border-box;
+                               resize:vertical;"></textarea>
+            </div>
+
+            <input type="submit" value="SAVE APPOINTMENT"
+                   style="width:100%;padding:13px;
+                          background:linear-gradient(135deg,#bf360c,#f57c00);
+                          color:white;border:none;border-radius:12px;font-size:15px;
+                          font-weight:bold;cursor:pointer;
+                          box-shadow:0 4px 12px rgba(191,54,12,0.4);">
+          </form>
+          </div>
+        </div>
+
+        <!-- REMINDER INFO CARD -->
+        <div style="background:white;border-radius:14px;
+                    box-shadow:0 6px 20px rgba(0,0,0,0.15);overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#f9a825,#fdd835);padding:13px 20px;">
+            <img src="https://img.icons8.com/color/24/appointment-reminders.png" width="18"
+                 style="vertical-align:middle;">
+            <b style="color:white;font-size:13px;margin-left:8px;vertical-align:middle;">
+              Appointment Reminders
+            </b>
+          </div>
+          <div style="padding:16px 20px;">
+            {% for icon_url, tip in [
+              ('https://img.icons8.com/color/20/alarm.png',         'Reminders auto-appear in Notifications on the day of your appointment.'),
+              ('https://img.icons8.com/color/20/medical-history.png','Carry your medical reports and previous prescriptions.'),
+              ('https://img.icons8.com/color/20/ok.png',            'Mark appointments as Done after the visit.')
+            ] %}
+            <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;">
+              <img src="{{ icon_url }}" width="18" alt="tip"
+                   style="margin-top:2px;" onerror="this.style.display='none'">
+              <span style="color:#555;font-size:13px;line-height:1.5;">{{ tip }}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+      </td>
+
+      <!-- RIGHT: APPOINTMENTS LIST -->
+      <td width="64%">
+        <div style="background:white;border-radius:16px;
+                    box-shadow:0 8px 30px rgba(0,0,0,0.2);overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#1a3a8f,#1976d2);padding:16px 22px;">
+            <img src="https://img.icons8.com/color/24/calendar.png" width="20"
+                 style="vertical-align:middle;">
+            <b style="color:white;font-size:15px;margin-left:8px;vertical-align:middle;">
+              All Appointments
+            </b>
+          </div>
+          <div style="padding:20px 22px;">
+
+          {% if all_appointments %}
+            {% for appt in all_appointments %}
+            <div style="border-radius:14px;padding:16px 20px;margin-bottom:12px;
+                        border-left:5px solid
+                        {% if appt['status']=='Completed' %}#4caf50
+                        {% elif appt['appointment_date'] < today %}#f44336
+                        {% else %}#ff9800{% endif %};
+                        background:
+                        {% if appt['status']=='Completed' %}#f1f8e9
+                        {% elif appt['appointment_date'] < today %}#ffeef0
+                        {% else %}#fffde7{% endif %};">
+
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr valign="top">
+                  <td width="50">
+                    <img src="https://img.icons8.com/color/48/stethoscope.png" width="40"
+                         onerror="this.style.display='none'">
+                  </td>
+                  <td style="padding-left:14px;">
+                    <b style="color:#333;font-size:15px;">Dr. {{ appt['doctor_name'] }}</b>
+                    <br>
+                    <table cellpadding="0" cellspacing="0" style="margin-top:6px;">
+                      <tr>
+                        <td style="padding-right:16px;">
+                          <img src="https://img.icons8.com/color/16/calendar.png" width="13"
+                               style="vertical-align:middle;">
+                          <span style="font-size:13px;color:#e65100;font-weight:bold;">
+                            &nbsp;{{ appt['appointment_date'] }}
+                          </span>
+                        </td>
+                        <td>
+                          <img src="https://img.icons8.com/color/16/clock.png" width="13"
+                               style="vertical-align:middle;">
+                          <span style="font-size:13px;color:#555;">
+                            &nbsp;{{ appt['appointment_time'] }}
+                          </span>
+                        </td>
+                      </tr>
+                    </table>
+                    {% if appt['notes'] %}
+                    <div style="margin-top:6px;font-size:12px;color:#888;">
+                      <img src="https://img.icons8.com/color/14/note.png" width="12"
+                           style="vertical-align:middle;">
+                      &nbsp;{{ appt['notes'] }}
+                    </div>
+                    {% endif %}
+                  </td>
+                  <td align="right" valign="top" style="padding-left:10px;">
+                    <span style="font-size:12px;font-weight:bold;padding:4px 12px;
+                          border-radius:12px;display:block;text-align:center;white-space:nowrap;
+                          {% if appt['status']=='Completed' %}background:#e8f5e9;color:#2e7d32;
+                          {% elif appt['appointment_date'] < today %}background:#ffebee;color:#c62828;
+                          {% else %}background:#fff3e0;color:#e65100;{% endif %}">
+                      {% if appt['status']=='Completed' %}&#10003; Completed
+                      {% elif appt['appointment_date'] < today %}Past
+                      {% else %}Upcoming{% endif %}
+                    </span>
+                    <br>
+                    {% if appt['status'] != 'Completed' %}
+                    <form method="POST" action="/appointment" style="display:inline;">
+                      <input type="hidden" name="action" value="complete">
+                      <input type="hidden" name="appt_id" value="{{ appt['id'] }}">
+                      <input type="submit" value="Mark Done"
+                             style="background:#4caf50;color:white;border:none;
+                                    padding:5px 12px;border-radius:8px;
+                                    font-size:11px;cursor:pointer;margin:2px;
+                                    width:100%;font-weight:bold;">
+                    </form>
+                    {% endif %}
+                    <form method="POST" action="/appointment"
+                          onsubmit="return confirm('Delete this appointment?')">
+                      <input type="hidden" name="action" value="delete">
+                      <input type="hidden" name="appt_id" value="{{ appt['id'] }}">
+                      <input type="submit" value="Delete"
+                             style="background:#f44336;color:white;border:none;
+                                    padding:5px 12px;border-radius:8px;
+                                    font-size:11px;cursor:pointer;margin:2px;
+                                    width:100%;font-weight:bold;">
+                    </form>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            {% endfor %}
+          {% else %}
+          <div style="text-align:center;padding:50px 20px;">
+            <img src="https://img.icons8.com/color/80/stethoscope.png" width="64"
+                 style="opacity:0.5;" onerror="this.style.display='none'">
+            <p style="color:#aaa;font-size:15px;margin-top:14px;">
+              No appointments scheduled yet.<br>
+              <span style="font-size:13px;">Use the form to add your first appointment!</span>
+            </p>
+          </div>
+          {% endif %}
+
+          </div>
+        </div>
+      </td>
+
+    </tr>
+  </table>
+</div>
+
+<!-- FOOTER -->
+<div style="text-align:center;padding:14px;color:rgba(255,255,255,0.4);font-size:12px;">
+  <img src="https://img.icons8.com/color/16/heart-with-pulse.png" width="13"
+       style="vertical-align:middle;opacity:0.6;">
+  &nbsp;Early Care &mdash; This prototype provides general health reminders and is NOT a medical diagnosis.
+</div>
+
+</body>
+</html>

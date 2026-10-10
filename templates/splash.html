@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Early Care">
+    <meta name="theme-color" content="#11998e">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/color/192/heart-with-pulse.png">
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js');
+      }
+    </script>
+    <title>Early Care - Healthcare Reminder System</title>
+    <meta http-equiv="refresh" content="4;url=/login">
+</head>
+<body style="margin:0; padding:0; background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+             min-height:100vh; font-family:Arial,sans-serif;">
+
+<table width="100%" height="100%" cellpadding="0" cellspacing="0" style="min-height:100vh;">
+<tr><td align="center" valign="middle" style="padding:30px;">
+
+<table width="640" cellpadding="0" cellspacing="0"
+       style="background:rgba(255,255,255,0.97); border-radius:22px;
+              box-shadow:0 25px 70px rgba(0,0,0,0.5); overflow:hidden;">
+
+    <!-- HERO BANNER WITH IMAGE -->
+    <tr>
+        <td style="background:linear-gradient(135deg,#11998e,#38ef7d);
+                   padding:0; position:relative; overflow:hidden;">
+            <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td width="55%" style="padding:35px 30px 35px 40px; vertical-align:middle;">
+                        <div style="font-size:44px; margin-bottom:6px;">&#9829;</div>
+                        <h1 style="color:white; margin:0; font-size:36px; letter-spacing:4px;
+                                    text-shadow:2px 3px 8px rgba(0,0,0,0.25);">EARLY CARE</h1>
+                        <p style="color:rgba(255,255,255,0.92); font-size:13px; margin:8px 0 14px 0;
+                                   letter-spacing:1.5px;">A SURVEY-BASED HEALTHCARE REMINDER SYSTEM</p>
+                        <p style="color:white; font-size:16px; font-style:italic; margin:0;
+                                   font-weight:bold;">"Your Health, Your Reminder"</p>
+                    </td>
+                    <td width="45%" align="center" style="padding:20px 20px 0 0; vertical-align:bottom;">
+                        <!-- Doctor/Health Image -->
+                        <img src="https://img.icons8.com/color/160/000000/doctor-male--v1.png"
+                             alt="Doctor" width="140"
+                             style="filter:drop-shadow(4px 6px 10px rgba(0,0,0,0.3));">
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <!-- FEATURE CARDS WITH IMAGES -->
+    <tr>
+        <td style="padding:28px 32px 20px 32px;">
+            <p style="text-align:center; color:#2c5364; font-weight:bold;
+                      font-size:15px; margin:0 0 18px 0;">
+                &#127381; Everything you need to stay healthy
+            </p>
+
+            <table width="100%" cellpadding="0" cellspacing="8">
+                <tr>
+                    <td width="33%" align="center"
+                        style="background:linear-gradient(135deg,#fce4ec,#f8bbd0);
+                               border-radius:14px; padding:16px 10px; border:2px solid #e91e63;
+                               vertical-align:top;">
+                        <img src="https://img.icons8.com/color/64/000000/pill.png"
+                             alt="Medicine" width="52" height="52">
+                        <br>
+                        <b style="color:#880e4f; font-size:12px; display:block; margin-top:6px;">Medicine</b>
+                        <span style="color:#ad1457; font-size:11px;">Never miss a dose</span>
+                    </td>
+                    <td width="4%"></td>
+                    <td width="33%" align="center"
+                        style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);
+                               border-radius:14px; padding:16px 10px; border:2px solid #2196f3;
+                               vertical-align:top;">
+                        <img src="https://img.icons8.com/color/64/000000/water.png"
+                             alt="Water" width="52" height="52">
+                        <br>
+                        <b style="color:#0d47a1; font-size:12px; display:block; margin-top:6px;">Water</b>
+                        <span style="color:#1565c0; font-size:11px;">Stay hydrated daily</span>
+                    </td>
+                    <td width="4%"></td>
+                    <td width="33%" align="center"
+                        style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);
+                               border-radius:14px; padding:16px 10px; border:2px solid #4caf50;
+                               vertical-align:top;">
+                        <img src="https://img.icons8.com/color/64/000000/running.png"
+                             alt="Exercise" width="52" height="52">
+                        <br>
+                        <b style="color:#1b5e20; font-size:12px; display:block; margin-top:6px;">Exercise</b>
+                        <span style="color:#2e7d32; font-size:11px;">Stay active every day</span>
+                    </td>
+                </tr>
+                <tr><td colspan="5" style="height:10px;"></td></tr>
+                <tr>
+                    <td align="center"
+                        style="background:linear-gradient(135deg,#fff3e0,#ffe0b2);
+                               border-radius:14px; padding:16px 10px; border:2px solid #ff9800;
+                               vertical-align:top;">
+                        <img src="https://img.icons8.com/color/64/000000/stethoscope.png"
+                             alt="Doctor" width="52" height="52">
+                        <br>
+                        <b style="color:#e65100; font-size:12px; display:block; margin-top:6px;">Doctor</b>
+                        <span style="color:#bf360c; font-size:11px;">Track appointments</span>
+                    </td>
+                    <td></td>
+                    <td align="center"
+                        style="background:linear-gradient(135deg,#ede7f6,#d1c4e9);
+                               border-radius:14px; padding:16px 10px; border:2px solid #673ab7;
+                               vertical-align:top;">
+                        <img src="https://img.icons8.com/color/64/000000/survey.png"
+                             alt="Survey" width="52" height="52">
+                        <br>
+                        <b style="color:#311b92; font-size:12px; display:block; margin-top:6px;">Survey</b>
+                        <span style="color:#4527a0; font-size:11px;">Health profiling</span>
+                    </td>
+                    <td></td>
+                    <td align="center"
+                        style="background:linear-gradient(135deg,#e0f2f1,#b2dfdb);
+                               border-radius:14px; padding:16px 10px; border:2px solid #009688;
+                               vertical-align:top;">
+                        <img src="https://img.icons8.com/color/64/000000/appointment-reminders.png"
+                             alt="Notifications" width="52" height="52">
+                        <br>
+                        <b style="color:#004d40; font-size:12px; display:block; margin-top:6px;">Reminders</b>
+                        <span style="color:#00695c; font-size:11px;">Smart notifications</span>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <!-- LOADING BAR -->
+    <tr>
+        <td style="padding:10px 32px 24px 32px; text-align:center;">
+            <div style="background:#e0e0e0; border-radius:20px; height:8px;
+                        overflow:hidden; margin-bottom:14px;">
+                <div style="background:linear-gradient(90deg,#11998e,#38ef7d);
+                             height:100%; width:100%;
+                             animation:none;"></div>
+            </div>
+            <p style="color:#888; font-size:13px; margin:0;">
+                &#8987; Loading... redirecting to Login in a moment.
+            </p>
+            <a href="/login"
+               style="color:#11998e; font-weight:bold; font-size:13px;
+                      text-decoration:none; display:block; margin-top:6px;">
+                Click here if not redirected &rarr;
+            </a>
+        </td>
+    </tr>
+
+    <!-- FOOTER -->
+    <tr>
+        <td style="background:#f5f5f5; padding:12px 20px; text-align:center;
+                   color:#aaa; font-size:11px; border-top:1px solid #eee;">
+            <img src="https://img.icons8.com/color/20/000000/heart-with-pulse.png"
+                 alt="heart" width="16" style="vertical-align:middle;">
+            &nbsp;Early Care &mdash; College IT Project 2026 &mdash;
+            This prototype provides general health reminders and is NOT a medical diagnosis.
+        </td>
+    </tr>
+
+</table>
+
+</td></tr>
+</table>
+</body>
+</html>

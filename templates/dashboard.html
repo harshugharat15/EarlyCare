@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+<head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Early Care">
+    <meta name="theme-color" content="#11998e">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/color/192/heart-with-pulse.png">
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js');
+      }
+    </script>
+    <title>Dashboard - Early Care</title>
+  <meta http-equiv="refresh" content="120">
+</head>
+<body style="margin:0;padding:0;font-family:Arial,sans-serif;
+             background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);min-height:100vh;">
+
+<!-- TOP NAV -->
+<table width="100%" cellpadding="0" cellspacing="0"
+       style="background:linear-gradient(135deg,#00695c,#00897b);
+              box-shadow:0 4px 15px rgba(0,0,0,0.3);">
+  <tr>
+    <td style="padding:12px 30px;" width="60">
+      <img src="https://img.icons8.com/color/48/heart-with-pulse.png" width="38" alt="logo">
+    </td>
+    <td>
+      <span style="color:white;font-size:20px;font-weight:bold;letter-spacing:2px;">EARLY CARE</span><br>
+      <span style="color:rgba(255,255,255,0.85);font-size:12px;">
+        Welcome, <b>{{ user_name }}</b> &nbsp;|&nbsp; Today: {{ today }}
+      </span>
+    </td>
+    <td align="right" style="padding:12px 30px;">
+      <a href="/logout"
+         style="background:rgba(255,255,255,0.2);color:white;padding:8px 20px;
+                border-radius:20px;text-decoration:none;font-size:13px;font-weight:bold;">
+        <img src="https://img.icons8.com/color/16/exit.png" width="14"
+             style="vertical-align:middle;">&nbsp;Logout
+      </a>
+    </td>
+  </tr>
+</table>
+
+<!-- FLASH -->
+{% with messages = get_flashed_messages() %}{% if messages %}
+<div style="padding:10px 30px;">
+{% for msg in messages %}
+<div style="background:#d4edda;border:1px solid #28a745;border-radius:10px;
+            padding:12px 18px;color:#155724;font-size:14px;margin-top:8px;">
+  &#10003; {{ msg }}
+</div>
+{% endfor %}
+</div>
+{% endif %}{% endwith %}
+
+<!-- MENU GRID -->
+<div style="padding:20px 30px 10px 30px;">
+  <div style="background:white;border-radius:16px;
+              box-shadow:0 8px 30px rgba(0,0,0,0.25);overflow:hidden;">
+
+    <!-- Card Header -->
+    <div style="background:linear-gradient(135deg,#00695c,#00897b);padding:15px 24px;">
+      <img src="https://img.icons8.com/color/24/dashboard-layout.png" width="20"
+           style="vertical-align:middle;">
+      <b style="color:white;font-size:15px;margin-left:8px;vertical-align:middle;">Quick Menu</b>
+    </div>
+
+    <!-- Row 1 -->
+    <div style="padding:16px 16px 0 16px;">
+      <table width="100%" cellpadding="0" cellspacing="10">
+        <tr>
+          <!-- Medicine -->
+          <td width="16%">
+            <a href="/medicine" style="text-decoration:none;display:block;">
+              <div style="background:linear-gradient(135deg,#fce4ec,#f8bbd0);
+                          border:2px solid #e91e63;border-radius:14px;
+                          padding:18px 10px;text-align:center;">
+                <img src="https://img.icons8.com/color/64/pill.png" width="48" alt="Medicine"
+                     onerror="this.style.display='none'">
+                <br>
+                <b style="color:#880e4f;font-size:13px;display:block;margin-top:8px;">Medicine</b>
+                <span style="color:#ad1457;font-size:11px;">Reminder</span>
+              </div>
+            </a>
+          </td>
+          <!-- Water -->
+          <td width="16%">
+            <a href="/water" style="text-decoration:none;display:block;">
+              <div style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);
+                          border:2px solid #1976d2;border-radius:14px;
+                          padding:18px 10px;text-align:center;">
+                <img src="https://img.icons8.com/color/64/water.png" width="48" alt="Water"
+                     onerror="this.style.display='none'">
+                <br>
+                <b style="color:#0d47a1;font-size:13px;display:block;margin-top:8px;">Water</b>
+                <span style="color:#1565c0;font-size:11px;">Reminder</span>
+              </div>
+            </a>
+          </td>
+          <!-- Exercise -->
+          <td width="16%">
+            <a href="/exercise" style="text-decoration:none;display:block;">
+              <div style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);
+                          border:2px solid #388e3c;border-radius:14px;
+                          padding:18px 10px;text-align:center;">
+                <img src="https://img.icons8.com/color/64/running.png" width="48" alt="Exercise"
+                     onerror="this.style.display='none'">
+                <br>
+                <b style="color:#1b5e20;font-size:13px;display:block;margin-top:8px;">Exercise</b>
+                <span style="color:#2e7d32;font-size:11px;">Reminder</span>
+              </div>
+            </a>
+          </td>
+          <!-- Doctor -->
+          <td width="16%">
+            <a href="/appointment" style="text-decoration:none;display:block;">
+              <div style="background:linear-gradient(135deg,#fff3e0,#ffe0b2);
+                          border:2px solid #f57c00;border-radius:14px;
+                          padding:18px 10px;text-align:center;">
+                <img src="https://img.icons8.com/color/64/stethoscope.png" width="48" alt="Doctor"
+                     onerror="this.style.display='none'">
+                <br>
+                <b style="color:#e65100;font-size:13px;display:block;margin-top:8px;">Doctor</b>
+                <span style="color:#bf360c;font-size:11px;">Appointment</span>
+              </div>
+            </a>
+          </td>
+          <!-- Health Profile -->
+          <td width="16%">
+            <a href="/health_profile" style="text-decoration:none;display:block;">
+              <div style="background:linear-gradient(135deg,#ede7f6,#d1c4e9);
+                          border:2px solid #7b1fa2;border-radius:14px;
+                          padding:18px 10px;text-align:center;">
+                <img src="https://img.icons8.com/color/64/medical-history.png" width="48" alt="Profile"
+                     onerror="this.style.display='none'">
+                <br>
+                <b style="color:#4a148c;font-size:13px;display:block;margin-top:8px;">Health</b>
+                <span style="color:#6a1b9a;font-size:11px;">Profile</span>
+              </div>
+            </a>
+          </td>
+          <!-- Notifications -->
+          <td width="16%">
+            <a href="/notifications" style="text-decoration:none;display:block;">
+              <div style="background:linear-gradient(135deg,#ffebee,#ffcdd2);
+                          border:2px solid #e53935;border-radius:14px;
+                          padding:18px 10px;text-align:center;">
+                <img src="https://img.icons8.com/color/64/appointment-reminders.png" width="48"
+                     alt="Notif" onerror="this.style.display='none'">
+                <br>
+                <b style="color:#b71c1c;font-size:13px;display:block;margin-top:8px;">
+                  Notifications
+                </b>
+                {% if notif_count > 0 %}
+                <span style="background:#e53935;color:white;padding:2px 8px;
+                             border-radius:10px;font-size:11px;font-weight:bold;">
+                  {{ notif_count }} pending
+                </span>
+                {% else %}
+                <span style="color:#c62828;font-size:11px;">All clear</span>
+                {% endif %}
+              </div>
+            </a>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- History full-width row -->
+    <div style="padding:10px 16px 16px 16px;">
+      <a href="/history" style="text-decoration:none;display:block;">
+        <div style="background:linear-gradient(135deg,#e0f2f1,#b2dfdb);
+                    border:2px solid #00897b;border-radius:14px;
+                    padding:14px 22px;">
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr valign="middle">
+              <td width="50">
+                <img src="https://img.icons8.com/color/48/time-machine.png" width="38"
+                     onerror="this.style.display='none'">
+              </td>
+              <td style="padding-left:14px;">
+                <b style="color:#004d40;font-size:14px;">Reminder History</b>
+                <p style="color:#00695c;font-size:12px;margin:3px 0 0 0;">
+                  View all past reminder records — Taken, Skipped &amp; Snoozed
+                </p>
+              </td>
+              <td align="right">
+                <span style="color:#00897b;font-size:26px;font-weight:bold;">&#8250;</span>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<!-- TODAY'S REMINDERS + APPOINTMENTS side by side -->
+<div style="padding:16px 30px 10px 30px;">
+  <table width="100%" cellpadding="0" cellspacing="16">
+    <tr valign="top">
+
+      <!-- TODAY'S REMINDERS -->
+      <td width="60%">
+        <div style="background:white;border-radius:16px;
+                    box-shadow:0 8px 30px rgba(0,0,0,0.2);overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#1a3a8f,#1976d2);padding:14px 22px;">
+            <img src="https://img.icons8.com/color/24/alarm.png" width="20"
+                 style="vertical-align:middle;">
+            <b style="color:white;font-size:14px;margin-left:8px;vertical-align:middle;">
+              Today's Reminders
+            </b>
+            <span style="color:rgba(255,255,255,0.7);font-size:12px;margin-left:8px;">
+              {{ today }}
+            </span>
+          </div>
+          <div style="padding:16px 20px;">
+          {% if todays_reminders %}
+            <table width="100%" cellpadding="0" cellspacing="0"
+                   style="border-collapse:collapse;font-size:13px;">
+              <tr style="background:#f8f9fa;">
+                <th style="padding:9px 12px;text-align:left;border-bottom:2px solid #eee;
+                            color:#666;font-weight:bold;">#</th>
+                <th style="padding:9px 12px;text-align:left;border-bottom:2px solid #eee;
+                            color:#666;font-weight:bold;">Type</th>
+                <th style="padding:9px 12px;text-align:left;border-bottom:2px solid #eee;
+                            color:#666;font-weight:bold;">Message</th>
+                <th style="padding:9px 12px;text-align:center;border-bottom:2px solid #eee;
+                            color:#666;font-weight:bold;">Time</th>
+                <th style="padding:9px 12px;text-align:center;border-bottom:2px solid #eee;
+                            color:#666;font-weight:bold;">Actions</th>
+              </tr>
+              {% for r in todays_reminders %}
+              <tr style="border-bottom:1px solid #f5f5f5;">
+                <td style="padding:9px 12px;color:#aaa;">{{ loop.index }}</td>
+                <td style="padding:9px 12px;">
+                  {% if r['reminder_type']=='Medicine' %}
+                    <img src="https://img.icons8.com/color/20/pill.png" width="18"
+                         style="vertical-align:middle;"
+                         onerror="this.style.display='none'">
+                    <span style="font-size:12px;color:#880e4f;margin-left:4px;">Medicine</span>
+                  {% elif r['reminder_type']=='Water' %}
+                    <img src="https://img.icons8.com/color/20/water.png" width="18"
+                         style="vertical-align:middle;"
+                         onerror="this.style.display='none'">
+                    <span style="font-size:12px;color:#0d47a1;margin-left:4px;">Water</span>
+                  {% elif r['reminder_type']=='Exercise' %}
+                    <img src="https://img.icons8.com/color/20/running.png" width="18"
+                         style="vertical-align:middle;"
+                         onerror="this.style.display='none'">
+                    <span style="font-size:12px;color:#1b5e20;margin-left:4px;">Exercise</span>
+                  {% else %}
+                    <img src="https://img.icons8.com/color/20/stethoscope.png" width="18"
+                         style="vertical-align:middle;"
+                         onerror="this.style.display='none'">
+                    <span style="font-size:12px;color:#e65100;margin-left:4px;">Doctor</span>
+                  {% endif %}
+                </td>
+                <td style="padding:9px 12px;color:#444;font-size:12px;">{{ r['message'] }}</td>
+                <td style="padding:9px 12px;text-align:center;color:#1976d2;
+                            font-weight:bold;font-size:12px;">
+                  {{ r['scheduled_time'][11:] if r['scheduled_time'] else '-' }}
+                </td>
+                <td style="padding:6px 12px;text-align:center;">
+                  <form method="POST" action="/notification_action">
+                    <input type="hidden" name="notif_id" value="{{ r['id'] }}">
+                    <input type="submit" name="action" value="taken"
+                           style="background:#43a047;color:white;border:none;
+                                  padding:5px 9px;border-radius:7px;
+                                  font-size:11px;cursor:pointer;margin:1px;font-weight:bold;">
+                    <input type="submit" name="action" value="snooze"
+                           style="background:#fb8c00;color:white;border:none;
+                                  padding:5px 9px;border-radius:7px;
+                                  font-size:11px;cursor:pointer;margin:1px;font-weight:bold;">
+                    <input type="submit" name="action" value="skip"
+                           style="background:#e53935;color:white;border:none;
+                                  padding:5px 9px;border-radius:7px;
+                                  font-size:11px;cursor:pointer;margin:1px;font-weight:bold;">
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+            </table>
+          {% else %}
+          <div style="text-align:center;padding:30px 20px;">
+            <img src="https://img.icons8.com/color/64/ok.png" width="48"
+                 style="opacity:0.6;" onerror="this.style.display='none'">
+            <p style="color:#aaa;font-size:14px;margin-top:10px;">
+              No reminders for today.
+              <a href="/medicine" style="color:#1976d2;">Add reminders</a>
+            </p>
+          </div>
+          {% endif %}
+          </div>
+        </div>
+      </td>
+
+      <!-- UPCOMING APPOINTMENTS -->
+      <td width="40%">
+        <div style="background:white;border-radius:16px;
+                    box-shadow:0 8px 30px rgba(0,0,0,0.2);overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#bf360c,#f57c00);padding:14px 22px;">
+            <img src="https://img.icons8.com/color/24/stethoscope.png" width="20"
+                 style="vertical-align:middle;">
+            <b style="color:white;font-size:14px;margin-left:8px;vertical-align:middle;">
+              Upcoming Appointments
+            </b>
+          </div>
+          <div style="padding:16px 20px;">
+          {% if upcoming_appts %}
+            {% for a in upcoming_appts %}
+            <div style="background:#fff8e1;border-radius:12px;padding:12px 16px;
+                        margin-bottom:10px;border-left:4px solid #f57c00;">
+              <b style="color:#333;font-size:14px;">
+                <img src="https://img.icons8.com/color/20/stethoscope.png" width="16"
+                     style="vertical-align:middle;"
+                     onerror="this.style.display='none'">
+                &nbsp;Dr. {{ a['doctor_name'] }}
+              </b><br>
+              <span style="color:#e65100;font-size:13px;font-weight:bold;">
+                {{ a['appointment_date'] }}
+              </span>
+              &nbsp;&nbsp;
+              <span style="color:#666;font-size:13px;">{{ a['appointment_time'] }}</span>
+              {% if a['notes'] %}
+              <p style="color:#888;font-size:12px;margin:5px 0 0 0;">{{ a['notes'] }}</p>
+              {% endif %}
+            </div>
+            {% endfor %}
+          {% else %}
+          <div style="text-align:center;padding:30px 20px;">
+            <img src="https://img.icons8.com/color/64/stethoscope.png" width="48"
+                 style="opacity:0.5;" onerror="this.style.display='none'">
+            <p style="color:#aaa;font-size:13px;margin-top:10px;">
+              No upcoming appointments.
+              <br>
+              <a href="/appointment" style="color:#f57c00;">Schedule one</a>
+            </p>
+          </div>
+          {% endif %}
+          </div>
+        </div>
+      </td>
+
+    </tr>
+  </table>
+</div>
+
+<!-- FOOTER -->
+<div style="text-align:center;padding:16px;color:rgba(255,255,255,0.4);font-size:12px;">
+  <img src="https://img.icons8.com/color/16/heart-with-pulse.png" width="13"
+       style="vertical-align:middle;opacity:0.6;">
+  &nbsp;Early Care &mdash; This prototype provides general health reminders and is NOT a medical diagnosis.
+</div>
+
+</body>
+</html>

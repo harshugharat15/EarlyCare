@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Early Care">
+    <meta name="theme-color" content="#11998e">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/color/192/heart-with-pulse.png">
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js');
+      }
+    </script>
+    <title>Notifications - Early Care</title>
+  <meta http-equiv="refresh" content="60">
+</head>
+<body style="margin:0;padding:0;font-family:Arial,sans-serif;
+             background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);min-height:100vh;">
+
+<!-- TOP NAV -->
+<table width="100%" cellpadding="0" cellspacing="0"
+       style="background:linear-gradient(135deg,#4a148c,#7b1fa2);
+              box-shadow:0 4px 15px rgba(0,0,0,0.3);">
+  <tr>
+    <td style="padding:14px 30px;" width="60">
+      <img src="https://img.icons8.com/color/48/appointment-reminders.png" width="38" alt="notif">
+    </td>
+    <td>
+      <span style="color:white;font-size:20px;font-weight:bold;letter-spacing:2px;">EARLY CARE</span><br>
+      <span style="color:rgba(255,255,255,0.85);font-size:12px;">
+        Notifications &mdash; {{ user_name }} &nbsp;|&nbsp; {{ now }}
+      </span>
+    </td>
+    <td align="right" style="padding:14px 30px;">
+      <a href="/notifications"
+         style="background:rgba(255,255,255,0.2);color:white;padding:7px 16px;
+                border-radius:20px;text-decoration:none;font-size:13px;margin-right:8px;">
+        Refresh
+      </a>
+      <a href="/dashboard"
+         style="background:rgba(255,255,255,0.2);color:white;padding:7px 16px;
+                border-radius:20px;text-decoration:none;font-size:13px;">
+        &#8592; Dashboard
+      </a>
+    </td>
+  </tr>
+</table>
+
+<!-- FLASH -->
+{% with messages = get_flashed_messages() %}{% if messages %}
+<div style="padding:10px 30px;">
+{% for msg in messages %}
+<div style="background:#d4edda;border:1px solid #28a745;border-radius:10px;
+            padding:12px 18px;color:#155724;font-size:14px;margin-top:8px;">
+  &#10003; {{ msg }}
+</div>
+{% endfor %}
+</div>
+{% endif %}{% endwith %}
+
+<div style="padding:20px 30px 30px 30px;">
+
+{% if all_notifs %}
+
+{% set pending = all_notifs | selectattr('status','equalto','Pending') | list %}
+{% set snoozed = all_notifs | selectattr('status','equalto','Snoozed') | list %}
+{% set done    = all_notifs | rejectattr('status','equalto','Pending')
+                            | rejectattr('status','equalto','Snoozed') | list %}
+
+<!-- PENDING -->
+{% if pending %}
+<div style="background:white;border-radius:16px;
+            box-shadow:0 8px 30px rgba(0,0,0,0.2);overflow:hidden;margin-bottom:18px;">
+  <div style="background:linear-gradient(135deg,#b71c1c,#e53935);padding:14px 22px;">
+    <img src="https://img.icons8.com/color/24/alarm.png" width="20"
+         style="vertical-align:middle;">
+    <b style="color:white;font-size:15px;margin-left:8px;vertical-align:middle;">
+      Pending Reminders ({{ pending|length }})
+    </b>
+  </div>
+  <div style="padding:16px 22px;">
+
+  <!-- ACTION GUIDE -->
+  <table width="100%" cellpadding="8" cellspacing="6" style="margin-bottom:14px;">
+    <tr>
+      <td align="center" width="33%"
+          style="background:#e8f5e9;border-radius:10px;border:1px solid #a5d6a7;">
+        <img src="https://img.icons8.com/color/24/ok.png" width="20"
+             onerror="this.style.display='none'">
+        <b style="color:#2e7d32;font-size:13px;display:block;">MARK AS TAKEN</b>
+        <span style="color:#555;font-size:11px;">Reminder completed</span>
+      </td>
+      <td align="center" width="33%"
+          style="background:#fff3e0;border-radius:10px;border:1px solid #ffcc80;">
+        <img src="https://img.icons8.com/color/24/clock.png" width="20"
+             onerror="this.style.display='none'">
+        <b style="color:#e65100;font-size:13px;display:block;">SNOOZE</b>
+        <span style="color:#555;font-size:11px;">Postpone by 10 minutes</span>
+      </td>
+      <td align="center" width="33%"
+          style="background:#ffebee;border-radius:10px;border:1px solid #ffcdd2;">
+        <img src="https://img.icons8.com/color/24/cancel.png" width="20"
+             onerror="this.style.display='none'">
+        <b style="color:#c62828;font-size:13px;display:block;">SKIP</b>
+        <span style="color:#555;font-size:11px;">Skip this reminder</span>
+      </td>
+    </tr>
+  </table>
+
+  {% for n in pending %}
+  <div style="background:linear-gradient(135deg,#fff5f5,#ffebee);
+              border:1px solid #ffcdd2;border-radius:14px;padding:16px 18px;
+              margin-bottom:12px;border-left:5px solid #e53935;">
+    <table width="100%" cellpadding="0" cellspacing="0">
+      <tr valign="middle">
+        <td width="52">
+          {% if n['reminder_type']=='Medicine' %}
+            <img src="https://img.icons8.com/color/48/pill.png" width="40"
+                 onerror="this.style.display='none'">
+          {% elif n['reminder_type']=='Water' %}
+            <img src="https://img.icons8.com/color/48/water.png" width="40"
+                 onerror="this.style.display='none'">
+          {% elif n['reminder_type']=='Exercise' %}
+            <img src="https://img.icons8.com/color/48/running.png" width="40"
+                 onerror="this.style.display='none'">
+          {% else %}
+            <img src="https://img.icons8.com/color/48/stethoscope.png" width="40"
+                 onerror="this.style.display='none'">
+          {% endif %}
+        </td>
+        <td style="padding-left:14px;">
+          <b style="color:#333;font-size:14px;">{{ n['message'] }}</b><br>
+          <span style="font-size:12px;color:#888;">
+            <img src="https://img.icons8.com/color/14/clock.png" width="12"
+                 style="vertical-align:middle;">
+            &nbsp;{{ n['scheduled_time'] }}
+            &nbsp;&nbsp;
+            <span style="background:#ffebee;color:#c62828;padding:2px 8px;
+                         border-radius:8px;font-size:11px;font-weight:bold;">
+              {{ n['reminder_type'] }}
+            </span>
+          </span>
+        </td>
+        <td align="right" style="white-space:nowrap;padding-left:10px;">
+          <form method="POST" action="/notification_action">
+            <input type="hidden" name="notif_id" value="{{ n['id'] }}">
+            <input type="submit" name="action" value="taken"
+                   style="background:linear-gradient(135deg,#2e7d32,#43a047);
+                          color:white;border:none;padding:9px 16px;
+                          border-radius:10px;font-size:12px;cursor:pointer;
+                          margin:3px;font-weight:bold;display:block;width:140px;">
+            <input type="submit" name="action" value="snooze"
+                   style="background:linear-gradient(135deg,#e65100,#fb8c00);
+                          color:white;border:none;padding:9px 16px;
+                          border-radius:10px;font-size:12px;cursor:pointer;
+                          margin:3px;font-weight:bold;display:block;width:140px;">
+            <input type="submit" name="action" value="skip"
+                   style="background:linear-gradient(135deg,#b71c1c,#e53935);
+                          color:white;border:none;padding:9px 16px;
+                          border-radius:10px;font-size:12px;cursor:pointer;
+                          margin:3px;font-weight:bold;display:block;width:140px;">
+          </form>
+        </td>
+      </tr>
+    </table>
+  </div>
+  {% endfor %}
+
+  </div>
+</div>
+{% else %}
+<div style="background:white;border-radius:14px;padding:20px 24px;
+            text-align:center;box-shadow:0 6px 20px rgba(0,0,0,0.15);margin-bottom:18px;">
+  <img src="https://img.icons8.com/color/64/ok.png" width="48"
+       style="opacity:0.7;" onerror="this.style.display='none'">
+  <p style="color:#4caf50;font-size:15px;font-weight:bold;margin-top:10px;">
+    No pending reminders right now. Great job!
+  </p>
+</div>
+{% endif %}
+
+<!-- SNOOZED -->
+{% if snoozed %}
+<div style="background:white;border-radius:16px;
+            box-shadow:0 8px 30px rgba(0,0,0,0.2);overflow:hidden;margin-bottom:18px;">
+  <div style="background:linear-gradient(135deg,#e65100,#fb8c00);padding:14px 22px;">
+    <img src="https://img.icons8.com/color/24/clock.png" width="20"
+         style="vertical-align:middle;">
+    <b style="color:white;font-size:15px;margin-left:8px;vertical-align:middle;">
+      Snoozed ({{ snoozed|length }})
+    </b>
+  </div>
+  <div style="padding:16px 22px;">
+  {% for n in snoozed %}
+  <div style="background:#fff8e1;border:1px solid #ffe082;border-radius:12px;
+              padding:14px 18px;margin-bottom:10px;border-left:5px solid #fb8c00;">
+    <table width="100%" cellpadding="0" cellspacing="0">
+      <tr valign="middle">
+        <td>
+          <b style="color:#333;font-size:13px;">{{ n['message'] }}</b><br>
+          <span style="font-size:12px;color:#888;">
+            Original: {{ n['scheduled_time'] }} &nbsp;|&nbsp;
+            <b style="color:#e65100;">Snoozed until: {{ n['snoozed_until'] or '-' }}</b>
+          </span>
+        </td>
+        <td align="right" style="white-space:nowrap;">
+          <form method="POST" action="/notification_action">
+            <input type="hidden" name="notif_id" value="{{ n['id'] }}">
+            <input type="submit" name="action" value="taken"
+                   style="background:#43a047;color:white;border:none;padding:7px 14px;
+                          border-radius:8px;font-size:12px;cursor:pointer;margin:2px;">
+            <input type="submit" name="action" value="skip"
+                   style="background:#e53935;color:white;border:none;padding:7px 14px;
+                          border-radius:8px;font-size:12px;cursor:pointer;margin:2px;">
+          </form>
+        </td>
+      </tr>
+    </table>
+  </div>
+  {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- COMPLETED -->
+{% if done %}
+<div style="background:white;border-radius:16px;
+            box-shadow:0 8px 30px rgba(0,0,0,0.2);overflow:hidden;margin-bottom:18px;">
+  <div style="background:linear-gradient(135deg,#1a3a8f,#1976d2);padding:14px 22px;">
+    <img src="https://img.icons8.com/color/24/list.png" width="20"
+         style="vertical-align:middle;">
+    <b style="color:white;font-size:15px;margin-left:8px;vertical-align:middle;">
+      Completed Reminders
+    </b>
+  </div>
+  <div style="padding:0;">
+  <table width="100%" cellpadding="0" cellspacing="0"
+         style="border-collapse:collapse;font-size:13px;">
+    <tr style="background:#f8f9fa;">
+      <th style="padding:10px 16px;text-align:left;border-bottom:2px solid #eee;color:#666;">Type</th>
+      <th style="padding:10px 16px;text-align:left;border-bottom:2px solid #eee;color:#666;">Message</th>
+      <th style="padding:10px 16px;text-align:center;border-bottom:2px solid #eee;color:#666;">Time</th>
+      <th style="padding:10px 16px;text-align:center;border-bottom:2px solid #eee;color:#666;">Status</th>
+    </tr>
+    {% for n in done %}
+    <tr style="border-bottom:1px solid #f5f5f5;
+               {% if loop.even %}background:#fafafa;{% endif %}">
+      <td style="padding:10px 16px;">
+        {% if n['reminder_type']=='Medicine' %}
+          <img src="https://img.icons8.com/color/20/pill.png" width="16"
+               style="vertical-align:middle;" onerror="this.style.display='none'">
+        {% elif n['reminder_type']=='Water' %}
+          <img src="https://img.icons8.com/color/20/water.png" width="16"
+               style="vertical-align:middle;" onerror="this.style.display='none'">
+        {% elif n['reminder_type']=='Exercise' %}
+          <img src="https://img.icons8.com/color/20/running.png" width="16"
+               style="vertical-align:middle;" onerror="this.style.display='none'">
+        {% else %}
+          <img src="https://img.icons8.com/color/20/stethoscope.png" width="16"
+               style="vertical-align:middle;" onerror="this.style.display='none'">
+        {% endif %}
+        <span style="margin-left:4px;color:#555;">{{ n['reminder_type'] }}</span>
+      </td>
+      <td style="padding:10px 16px;color:#555;font-size:12px;">{{ n['message'] }}</td>
+      <td style="padding:10px 16px;text-align:center;color:#888;font-size:12px;">
+        {{ n['scheduled_time'] }}
+      </td>
+      <td style="padding:10px 16px;text-align:center;">
+        <span style="padding:3px 12px;border-radius:10px;font-size:12px;font-weight:bold;
+            {% if n['status']=='Taken' %}background:#e8f5e9;color:#2e7d32;
+            {% elif n['status']=='Skipped' %}background:#ffebee;color:#c62828;
+            {% else %}background:#fff3e0;color:#e65100;{% endif %}">
+          {{ n['status'] }}
+        </span>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  </div>
+</div>
+{% endif %}
+
+{% else %}
+<div style="background:white;border-radius:16px;padding:50px 30px;text-align:center;
+            box-shadow:0 8px 30px rgba(0,0,0,0.2);">
+  <img src="https://img.icons8.com/color/80/appointment-reminders.png" width="64"
+       style="opacity:0.5;" onerror="this.style.display='none'">
+  <p style="color:#888;font-size:15px;margin-top:16px;">
+    No reminders found.<br>
+    <span style="font-size:13px;">Add reminders from the Dashboard to see them here.</span>
+  </p>
+  <div style="margin-top:16px;">
+    <a href="/medicine"
+       style="background:#e91e63;color:white;padding:10px 20px;border-radius:10px;
+              text-decoration:none;font-size:13px;margin:5px;display:inline-block;">
+       Medicine
+    </a>
+    <a href="/water"
+       style="background:#1976d2;color:white;padding:10px 20px;border-radius:10px;
+              text-decoration:none;font-size:13px;margin:5px;display:inline-block;">
+       Water
+    </a>
+    <a href="/exercise"
+       style="background:#388e3c;color:white;padding:10px 20px;border-radius:10px;
+              text-decoration:none;font-size:13px;margin:5px;display:inline-block;">
+       Exercise
+    </a>
+  </div>
+</div>
+{% endif %}
+
+<div style="text-align:center;margin-top:12px;">
+  <a href="/history"
+     style="color:rgba(255,255,255,0.6);font-size:13px;text-decoration:none;">
+    View Reminder History &rarr;
+  </a>
+</div>
+
+</div>
+
+<!-- FOOTER -->
+<div style="text-align:center;padding:14px;color:rgba(255,255,255,0.4);font-size:12px;">
+  <img src="https://img.icons8.com/color/16/heart-with-pulse.png" width="13"
+       style="vertical-align:middle;opacity:0.6;">
+  &nbsp;Early Care &mdash; NOT a medical diagnosis. Page auto-refreshes every 60 sec.
+</div>
+
+</body>
+</html>

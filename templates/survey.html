@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html>
+<head>    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Early Care">
+    <meta name="theme-color" content="#11998e">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/color/192/heart-with-pulse.png">
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js');
+      }
+    </script>
+    <title>Health Survey - Early Care</title></head>
+<body style="margin:0;padding:0;font-family:Arial,sans-serif;
+             background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);min-height:100vh;">
+
+<!-- TOP NAV -->
+<table width="100%" cellpadding="0" cellspacing="0"
+       style="background:linear-gradient(135deg,#1a3a8f,#1976d2);
+              box-shadow:0 4px 15px rgba(0,0,0,0.3);">
+  <tr>
+    <td style="padding:14px 30px;" width="60">
+      <img src="https://img.icons8.com/color/48/survey.png" width="38" alt="survey">
+    </td>
+    <td>
+      <span style="color:white;font-size:20px;font-weight:bold;letter-spacing:2px;">EARLY CARE</span><br>
+      <span style="color:rgba(255,255,255,0.85);font-size:12px;">
+        Health Survey &mdash; {{ user_name }}
+      </span>
+    </td>
+    <td align="right" style="padding:14px 30px;">
+      <a href="/dashboard"
+         style="background:rgba(255,255,255,0.2);color:white;padding:8px 20px;
+                border-radius:20px;text-decoration:none;font-size:13px;font-weight:bold;">
+        &#8592; Dashboard
+      </a>
+    </td>
+  </tr>
+</table>
+
+<!-- FLASH -->
+{% with messages = get_flashed_messages() %}{% if messages %}
+<div style="padding:10px 30px;">
+{% for msg in messages %}
+<div style="background:#d4edda;border:1px solid #28a745;border-radius:10px;
+            padding:12px 18px;color:#155724;font-size:14px;margin-top:8px;">
+  &#10003; {{ msg }}
+</div>
+{% endfor %}
+</div>
+{% endif %}{% endwith %}
+
+<div style="padding:20px 30px 30px 30px;">
+<form method="POST" action="/survey">
+
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr valign="top">
+
+      <!-- LEFT COLUMN -->
+      <td width="50%" style="padding-right:14px;">
+
+        <!-- PERSONAL DETAILS -->
+        <div style="background:white;border-radius:16px;
+                    box-shadow:0 8px 30px rgba(0,0,0,0.2);overflow:hidden;margin-bottom:16px;">
+          <div style="background:linear-gradient(135deg,#1a3a8f,#1976d2);padding:15px 22px;">
+            <img src="https://img.icons8.com/color/24/user.png" width="20"
+                 style="vertical-align:middle;">
+            <b style="color:white;font-size:14px;margin-left:8px;vertical-align:middle;">
+              Section 1 — Personal Details
+            </b>
+          </div>
+          <div style="padding:22px 24px;">
+
+            <div style="margin-bottom:14px;">
+              <label style="display:block;color:#444;font-weight:bold;font-size:13px;margin-bottom:5px;">
+                Full Name *
+              </label>
+              <input type="text" name="name" placeholder="Enter your full name" required
+                     style="width:100%;padding:11px 13px;border:2px solid #bbdefb;
+                            border-radius:10px;font-size:13px;box-sizing:border-box;">
+            </div>
+
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:14px;">
+              <tr valign="top">
+                <td width="49%" style="padding-right:7px;">
+                  <label style="display:block;color:#444;font-weight:bold;
+                                font-size:13px;margin-bottom:5px;">Age (years) *</label>
+                  <input type="number" name="age" placeholder="e.g. 21"
+                         min="1" max="120" required
+                         style="width:100%;padding:11px 13px;border:2px solid #bbdefb;
+                                border-radius:10px;font-size:13px;box-sizing:border-box;">
+                </td>
+                <td width="49%" style="padding-left:7px;">
+                  <label style="display:block;color:#444;font-weight:bold;
+                                font-size:13px;margin-bottom:5px;">Gender *</label>
+                  <select name="gender" required
+                          style="width:100%;padding:11px 10px;border:2px solid #bbdefb;
+                                 border-radius:10px;font-size:13px;background:white;
+                                 box-sizing:border-box;">
+                    <option value="">-- Select --</option>
+                    <option>Male</option><option>Female</option>
+                    <option>Other</option><option>Prefer not to say</option>
+                  </select>
+                </td>
+              </tr>
+            </table>
+
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr valign="top">
+                <td width="49%" style="padding-right:7px;">
+                  <label style="display:block;color:#444;font-weight:bold;
+                                font-size:13px;margin-bottom:5px;">Height (cm)</label>
+                  <input type="number" name="height" placeholder="e.g. 165"
+                         min="50" max="250"
+                         style="width:100%;padding:11px 13px;border:2px solid #bbdefb;
+                                border-radius:10px;font-size:13px;box-sizing:border-box;">
+                </td>
+                <td width="49%" style="padding-left:7px;">
+                  <label style="display:block;color:#444;font-weight:bold;
+                                font-size:13px;margin-bottom:5px;">Weight (kg)</label>
+                  <input type="number" name="weight" placeholder="e.g. 60"
+                         min="1" max="300"
+                         style="width:100%;padding:11px 13px;border:2px solid #bbdefb;
+                                border-radius:10px;font-size:13px;box-sizing:border-box;">
+                </td>
+              </tr>
+            </table>
+            <small style="color:#888;font-size:11px;margin-top:5px;display:block;">
+              Height and Weight are used to calculate your BMI automatically.
+            </small>
+
+          </div>
+        </div>
+
+        <!-- LIFESTYLE 1 -->
+        <div style="background:white;border-radius:16px;
+                    box-shadow:0 8px 30px rgba(0,0,0,0.2);overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#0d47a1,#1976d2);padding:15px 22px;">
+            <img src="https://img.icons8.com/color/24/water.png" width="20"
+                 style="vertical-align:middle;">
+            <b style="color:white;font-size:14px;margin-left:8px;vertical-align:middle;">
+              Water &amp; Sleep Habits
+            </b>
+          </div>
+          <div style="padding:22px 24px;">
+
+            <div style="margin-bottom:14px;">
+              <label style="display:block;color:#444;font-weight:bold;font-size:13px;margin-bottom:5px;">
+                <img src="https://img.icons8.com/color/16/water.png" width="14"
+                     style="vertical-align:middle;">&nbsp; Daily Water Intake
+              </label>
+              <select name="water_intake"
+                      style="width:100%;padding:11px 13px;border:2px solid #90caf9;
+                             border-radius:10px;font-size:13px;background:white;
+                             box-sizing:border-box;">
+                <option value="">-- Select --</option>
+                <option value="0.5">Less than 1 litre</option>
+                <option value="1.0">About 1 litre</option>
+                <option value="1.5">About 1.5 litres</option>
+                <option value="2.0">About 2 litres</option>
+                <option value="2.5">About 2.5 litres</option>
+                <option value="3.0">3 or more litres</option>
+              </select>
+            </div>
+
+            <div style="margin-bottom:0;">
+              <label style="display:block;color:#444;font-weight:bold;font-size:13px;margin-bottom:5px;">
+                <img src="https://img.icons8.com/color/16/sleeping-in-bed.png" width="14"
+                     style="vertical-align:middle;">&nbsp; Average Sleep Duration
+              </label>
+              <select name="sleep_hours"
+                      style="width:100%;padding:11px 13px;border:2px solid #90caf9;
+                             border-radius:10px;font-size:13px;background:white;
+                             box-sizing:border-box;">
+                <option value="">-- Select --</option>
+                <option value="4">Less than 5 hours</option>
+                <option value="5">About 5 hours</option>
+                <option value="6">About 6 hours</option>
+                <option value="7">About 7 hours</option>
+                <option value="8">About 8 hours</option>
+                <option value="9">9 or more hours</option>
+              </select>
+            </div>
+
+          </div>
+        </div>
+
+      </td>
+
+      <!-- RIGHT COLUMN -->
+      <td width="50%" style="padding-left:14px;">
+
+        <!-- ACTIVITY & HEALTH -->
+        <div style="background:white;border-radius:16px;
+                    box-shadow:0 8px 30px rgba(0,0,0,0.2);overflow:hidden;margin-bottom:16px;">
+          <div style="background:linear-gradient(135deg,#1b5e20,#388e3c);padding:15px 22px;">
+            <img src="https://img.icons8.com/color/24/running.png" width="20"
+                 style="vertical-align:middle;">
+            <b style="color:white;font-size:14px;margin-left:8px;vertical-align:middle;">
+              Section 2 — Lifestyle &amp; Health
+            </b>
+          </div>
+          <div style="padding:22px 24px;">
+
+            <div style="margin-bottom:14px;">
+              <label style="display:block;color:#444;font-weight:bold;font-size:13px;margin-bottom:5px;">
+                <img src="https://img.icons8.com/color/16/running.png" width="14"
+                     style="vertical-align:middle;">&nbsp; Physical Activity Level
+              </label>
+              <select name="activity_level"
+                      style="width:100%;padding:11px 13px;border:2px solid #a5d6a7;
+                             border-radius:10px;font-size:13px;background:white;
+                             box-sizing:border-box;">
+                <option value="">-- Select --</option>
+                <option value="Sedentary">Sedentary (little or no exercise)</option>
+                <option value="Low">Low (light 1-2 days/week)</option>
+                <option value="Moderate">Moderate (3-5 days/week)</option>
+                <option value="Active">Active (6-7 days/week)</option>
+                <option value="Very Active">Very Active (athlete)</option>
+              </select>
+            </div>
+
+            <div style="margin-bottom:14px;">
+              <label style="display:block;color:#444;font-weight:bold;font-size:13px;margin-bottom:5px;">
+                <img src="https://img.icons8.com/color/16/pill.png" width="14"
+                     style="vertical-align:middle;">&nbsp; Take Medicines Regularly?
+              </label>
+              <select name="takes_medicine"
+                      style="width:100%;padding:11px 13px;border:2px solid #a5d6a7;
+                             border-radius:10px;font-size:13px;background:white;
+                             box-sizing:border-box;">
+                <option value="">-- Select --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="Sometimes">Sometimes</option>
+              </select>
+            </div>
+
+            <div style="margin-bottom:14px;">
+              <label style="display:block;color:#444;font-weight:bold;font-size:13px;margin-bottom:5px;">
+                <img src="https://img.icons8.com/color/16/appointment-reminders.png" width="14"
+                     style="vertical-align:middle;">&nbsp; Need Health Reminders?
+              </label>
+              <select name="needs_reminders"
+                      style="width:100%;padding:11px 13px;border:2px solid #a5d6a7;
+                             border-radius:10px;font-size:13px;background:white;
+                             box-sizing:border-box;">
+                <option value="">-- Select --</option>
+                <option value="Yes">Yes, I often forget</option>
+                <option value="Sometimes">Sometimes</option>
+                <option value="No">No, I manage fine</option>
+              </select>
+            </div>
+
+            <div style="margin-bottom:0;">
+              <label style="display:block;color:#444;font-weight:bold;font-size:13px;margin-bottom:5px;">
+                Stress Level
+              </label>
+              <select name="stress_level"
+                      style="width:100%;padding:11px 13px;border:2px solid #a5d6a7;
+                             border-radius:10px;font-size:13px;background:white;
+                             box-sizing:border-box;">
+                <option value="">-- Select --</option>
+                <option value="Low">Low stress</option>
+                <option value="Moderate">Moderate stress</option>
+                <option value="High">High stress</option>
+                <option value="Very High">Very high stress</option>
+              </select>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- DIET & LIFESTYLE -->
+        <div style="background:white;border-radius:16px;
+                    box-shadow:0 8px 30px rgba(0,0,0,0.2);overflow:hidden;margin-bottom:16px;">
+          <div style="background:linear-gradient(135deg,#bf360c,#f57c00);padding:15px 22px;">
+            <img src="https://img.icons8.com/color/24/salad.png" width="20"
+                 style="vertical-align:middle;">
+            <b style="color:white;font-size:14px;margin-left:8px;vertical-align:middle;">
+              Diet &amp; Other Habits
+            </b>
+          </div>
+          <div style="padding:22px 24px;">
+
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr valign="top">
+                <td width="49%" style="padding-right:7px;">
+                  <label style="display:block;color:#444;font-weight:bold;
+                                font-size:13px;margin-bottom:5px;">Diet Type</label>
+                  <select name="diet_type"
+                          style="width:100%;padding:11px 10px;border:2px solid #ffcc80;
+                                 border-radius:10px;font-size:13px;background:white;
+                                 box-sizing:border-box;">
+                    <option value="">-- Select --</option>
+                    <option value="Balanced">Balanced diet</option>
+                    <option value="Vegetarian">Vegetarian</option>
+                    <option value="Vegan">Vegan</option>
+                    <option value="Non-vegetarian">Non-vegetarian</option>
+                    <option value="Junk food">Mostly junk food</option>
+                  </select>
+                </td>
+                <td width="49%" style="padding-left:7px;">
+                  <label style="display:block;color:#444;font-weight:bold;
+                                font-size:13px;margin-bottom:5px;">Smoking Status</label>
+                  <select name="smoking_status"
+                          style="width:100%;padding:11px 10px;border:2px solid #ffcc80;
+                                 border-radius:10px;font-size:13px;background:white;
+                                 box-sizing:border-box;">
+                    <option value="">-- Select --</option>
+                    <option value="Non-smoker">Non-smoker</option>
+                    <option value="Occasional">Occasional smoker</option>
+                    <option value="Regular">Regular smoker</option>
+                    <option value="Ex-smoker">Ex-smoker</option>
+                  </select>
+                </td>
+              </tr>
+            </table>
+
+          </div>
+        </div>
+
+        <!-- DISCLAIMER + SUBMIT -->
+        <div style="background:#fff8e1;border:1px solid #ffc107;border-radius:12px;
+                    padding:14px 18px;margin-bottom:14px;">
+          <img src="https://img.icons8.com/color/20/error.png" width="16"
+               style="vertical-align:middle;" onerror="this.style.display='none'">
+          <b style="color:#6d4c00;font-size:13px;">&nbsp;Important Note:</b>
+          <p style="color:#6d4c00;font-size:12px;margin:6px 0 0 0;line-height:1.5;">
+            This prototype provides <b>general health reminders only</b> and is
+            <b>NOT a medical diagnosis</b>. Please consult a doctor for medical advice.
+          </p>
+        </div>
+
+        <input type="submit" value="SUBMIT SURVEY &amp; VIEW HEALTH PROFILE"
+               style="width:100%;padding:14px;
+                      background:linear-gradient(135deg,#1a3a8f,#1976d2);
+                      color:white;border:none;border-radius:12px;font-size:15px;
+                      font-weight:bold;cursor:pointer;
+                      box-shadow:0 4px 12px rgba(26,58,143,0.4);">
+
+      </td>
+    </tr>
+  </table>
+
+</form>
+</div>
+
+<!-- FOOTER -->
+<div style="text-align:center;padding:14px;color:rgba(255,255,255,0.4);font-size:12px;">
+  <img src="https://img.icons8.com/color/16/heart-with-pulse.png" width="13"
+       style="vertical-align:middle;opacity:0.6;">
+  &nbsp;Early Care &mdash; NOT a medical diagnosis.
+</div>
+
+</body>
+</html>

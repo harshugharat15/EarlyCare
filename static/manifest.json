@@ -1,0 +1,22 @@
+{
+  "name": "Early Care",
+  "short_name": "Early Care",
+  "description": "A Survey-Based Healthcare Reminder System",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f2027",
+  "theme_color": "#11998e",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://img.icons8.com/color/192/heart-with-pulse.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://img.icons8.com/color/512/heart-with-pulse.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
