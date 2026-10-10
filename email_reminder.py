@@ -8,8 +8,9 @@ from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
 
 # ─── EMAIL CONFIGURATION ─────────────────────────────────────────────────────
-SENDER_EMAIL    = "harshugharat15@gmail.com"
-SENDER_PASSWORD = "qvfhpipqvarwwiaj"   # App password (spaces removed)
+# Credentials stored safely in environment variables
+SENDER_EMAIL    = os.environ.get('SENDER_EMAIL', 'harshugharat15@gmail.com')
+SENDER_PASSWORD = os.environ.get('SENDER_PASSWORD', '')
 SENDER_NAME     = "Early Care"
 
 DB_PATH = os.path.join(os.path.dirname(__file__), 'database', 'earlycare.db')
